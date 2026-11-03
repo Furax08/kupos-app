@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>El Mago Store | Catálogo Digital</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-28 selection:bg-emerald-100 selection:text-emerald-900">
+<!-- Header Superior Minimalista y Profesional -->
+<header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-100 transition-all shadow-xs">
+<div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm shadow-sm ring-2 ring-slate-100">
+                    M
+                </div>
+<div>
+<div class="flex items-center gap-1.5">
+<h1 class="font-bold text-sm tracking-tight text-slate-900" id="store-name">EL MAGO STORE</h1>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Abierto</span>
+</div>
+<p class="text-[11px] text-slate-400 font-medium">Catálogo &amp; Pedidos Rápidos</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5"><button aria-label="Datos Pago Móvil" class="inline-flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/70 transition-colors shadow-2xs active:scale-95" onclick="openPagoMovilModal()" title="Ver datos de Pago Móvil">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="20" x="2" y="5"></rect>
+<line x1="2" x2="22" y1="10" y2="10"></line>
+</svg>
+<span class="hidden sm:inline">Pago Móvil</span>
+<span class="sm:hidden text-[11px]">Pago</span>
+</button>
+<!-- Botón de Historial de Órdenes -->
+<button aria-label="Historial de Pedidos" class="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors" onclick="toggleOrdersModal()" title="Mis Pedidos">
+<svg class="w-5 h-5 stroke-[1.75]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full hidden ring-2 ring-white" id="orders-badge"></span>
+</button>
+<!-- Botón Carrito Header -->
+<button aria-label="Carrito de compras" class="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors" onclick="toggleCartModal()" title="Carrito">
+<svg class="w-5 h-5 stroke-[1.75]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white hidden" id="cart-badge-header">0</span>
+</button>
+</div>
+</div>
+<!-- Banner Tasa Oficial BCV con Botón Interactivo de Edición -->
+<div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border-t border-b border-emerald-100/70 px-4 py-1.5">
+<div class="max-w-md mx-auto flex items-center justify-between text-[11px]">
+<div class="font-bold text-emerald-800 flex items-center gap-1.5"><button aria-label="Datos Pago Móvil" class="inline-flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/70 transition-colors shadow-2xs active:scale-95" onclick="openPagoMovilModal()" title="Ver datos de Pago Móvil">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="20" x="2" y="5"></rect>
+<line x1="2" x2="22" y1="10" y2="10"></line>
+</svg>
+<span class="hidden sm:inline">Pago Móvil</span>
+<span class="sm:hidden text-[11px]">Pago</span>
+</button>
+<span>💵</span>
+<span class="flex items-center gap-1">Tasa BCV: <span class="text-slate-900 font-extrabold" id="exchange-rate-display">Bs. 36.50 / $</span></span>
+<span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-200/60 text-emerald-900 hidden" id="custom-rate-badge">Manual</span>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-emerald-700 hover:text-emerald-900 border border-emerald-200/80 font-bold text-[10px] shadow-2xs transition-all active:scale-95 group" onclick="openRateModal()" title="Modificar tasa de cambio en vivo">
+<svg class="w-3 h-3 text-emerald-600 group-hover:rotate-45 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+<span>Editar tasa</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Barra de Búsqueda y Filtros de Categorías -->
+<div class="sticky top-[93px] z-20 bg-slate-50/90 backdrop-blur-md pt-2 pb-3 px-4 border-b border-slate-200/50">
+<div class="max-w-md mx-auto space-y-2.5">
+<!-- Input Buscador -->
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<input class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200/80 rounded-2xl text-xs font-medium placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 transition-all shadow-xs" id="search-input" oninput="filterProducts()" placeholder="Buscar productos..." type="text"/>
+</div>
+<!-- Chips de Categoría -->
+<div class="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5" id="category-tabs">
+<!-- Se llena dinámicamente -->
+</div>
+</div>
+</div>
+<!-- Contenido Principal: Grid de Productos -->
+<main class="max-w-md mx-auto px-4 pt-3.5">
+<!-- Contador de resultados e indicador de moneda -->
+<div class="flex items-center justify-between mb-3 text-xs text-slate-500 font-medium px-0.5">
+<span id="results-count">Mostrando catálogo</span>
+<span class="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+<span>Precios duales ($ / Bs.)</span>
+</span>
+</div>
+<div class="grid grid-cols-2 gap-3" id="product-grid">
+<!-- Productos cargados con JS -->
+</div>
+</main>
+<!-- Barra Inferior Flotante del Carrito (Resumen rápido con precios duales) -->
+<div class="fixed bottom-4 inset-x-4 max-w-md mx-auto hidden z-40 transition-all duration-300 transform translate-y-0" id="cart-bar">
+<div class="bg-slate-900 text-white rounded-2xl p-3 shadow-2xl flex items-center justify-between border border-slate-800/80">
+<div class="flex items-center gap-2.5 pl-1">
+<div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-bold text-emerald-400 text-sm">
+<span id="cart-bar-count">0</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Total estimado</p>
+<div class="flex items-baseline gap-1.5">
+<p class="text-sm font-extrabold text-white tracking-tight" id="cart-total-bar">$0.00</p>
+<span class="text-slate-500 text-xs">/</span>
+<p class="text-xs font-bold text-emerald-400" id="cart-total-bar-bs">Bs. 0,00</p>
+</div>
+</div>
+</div>
+<button class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-bold text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1 shadow-sm" onclick="toggleCartModal()">
+<span>Ver orden</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Modal del Carrito Detallado -->
+<div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-end justify-center p-0 transition-opacity" id="cart-modal">
+<div class="bg-white w-full max-w-md rounded-t-3xl max-h-[94vh] flex flex-col shadow-2xl border-t border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom duration-200">
+<!-- Drag Handle & Header -->
+<div class="pt-3 pb-2 flex justify-center">
+<div class="w-10 h-1 bg-slate-200 rounded-full"></div>
+</div>
+<div class="px-5 pb-3 border-b border-slate-100 flex justify-between items-center">
+<div>
+<h2 class="font-bold text-base text-slate-900">Tu Pedido</h2>
+<p class="text-[11px] text-slate-400 font-medium">Tasa aplicada: <strong class="text-slate-700" id="cart-modal-rate-display">Bs. 36.50 / $</strong></p>
+</div>
+<button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition-colors" onclick="toggleCartModal()">
+                    ✕
+                </button>
+</div>
+<!-- Contenido desplazable (Lista de items + Sección de Datos de Pago) -->
+<div class="overflow-y-auto flex-1 divide-y divide-slate-100">
+<!-- Lista de items en carrito -->
+<div class="px-5 py-3 space-y-3 divide-y divide-slate-100" id="cart-items-list">
+<!-- Se inyecta dinámicamente -->
+</div>
+<!-- Bloque Elegante de Detalles del Pago y Comprobante -->
+<div class="p-5 bg-slate-50/70 space-y-3.5" id="payment-details-section">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="text-sm">🧾</span>
+<h3 class="font-bold text-xs text-slate-900 uppercase tracking-wider">Detalles del Pago / Comprobante</h3>
+</div>
+<span class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">Opcional o previo</span>
+</div>
+<div class="space-y-2.5 text-xs">
+<!-- Selector de Método / Banco -->
+<div>
+<label class="block text-[11px] font-semibold text-slate-600 mb-1" for="pay-method-select">Método o Banco Emisor</label>
+<select class="w-full bg-white border border-slate-200/90 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all shadow-2xs" id="pay-method-select">
+<option value="Pago Móvil Banesco">Pago Móvil Banesco (0134)</option>
+<option value="Pago Móvil BDV">Pago Móvil Banco de Venezuela (0102)</option>
+<option value="Pago Móvil Mercantil">Pago Móvil Mercantil (0105)</option>
+<option value="Pago Móvil Provincial">Pago Móvil BBVA Provincial (0108)</option>
+<option value="Otro Banco (Pago Móvil)">Pago Móvil (Otro Banco)</option>
+<option value="Zelle">Zelle / Dólares Efectivo</option>
+<option value="Pago al recibir">Pago en Efectivo al Entregar</option>
+</select>
+</div>
+<!-- Referencia de Pago y Titular -->
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-[11px] font-semibold text-slate-600 mb-1" for="pay-ref-input">Nº de Referencia</label>
+<input class="w-full bg-white border border-slate-200/90 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all shadow-2xs" id="pay-ref-input" placeholder="Ej: 849201" type="text"/>
+</div>
+<div>
+<label class="block text-[11px] font-semibold text-slate-600 mb-1" for="pay-holder-input">Titular que Transfiere</label>
+<input class="w-full bg-white border border-slate-200/90 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all shadow-2xs" id="pay-holder-input" placeholder="Ej: Carlos Pérez" type="text"/>
+</div>
+</div>
+<!-- Adjuntar Captura / Comprobante -->
+<div>
+<label class="block text-[11px] font-semibold text-slate-600 mb-1">Adjuntar Captura / Comprobante</label>
+<input accept="image/*" class="hidden" id="pay-receipt-file" onchange="handleReceiptUpload(event)" type="file"/>
+<!-- Dropzone UI -->
+<div class="border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-2xl p-3 bg-white hover:bg-emerald-50/30 transition-all cursor-pointer flex flex-col items-center justify-center text-center group" id="receipt-dropzone" onclick="document.getElementById('pay-receipt-file').click()">
+<div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<p class="text-xs font-bold text-slate-700">Toca para subir captura</p>
+<p class="text-[10px] text-slate-400 mt-0.5">PNG, JPG o screenshot del banco</p>
+</div>
+<!-- Preview de Comprobante (Oculto inicialmente) -->
+<div class="hidden bg-white border border-emerald-200 rounded-2xl p-2.5 flex items-center justify-between shadow-2xs" id="receipt-preview-container">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<img alt="Comprobante" class="w-12 h-12 rounded-xl object-cover border border-slate-200 flex-shrink-0" id="receipt-preview-img" src=""/>
+<div class="min-w-0">
+<p class="text-xs font-bold text-slate-900 truncate" id="receipt-file-name">comprobante.jpg</p>
+<p class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+<span>✓ Comprobante listo</span>
+</p>
+</div>
+</div>
+<button class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors ml-2" onclick="removeReceiptFile(event)" title="Quitar comprobante" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Resumen de Costos y Botón WhatsApp -->
+<div class="p-5 border-t border-slate-100 bg-slate-50/90 space-y-3.5">
+<div class="space-y-1.5 text-xs">
+<div class="flex justify-between text-slate-500 font-medium">
+<span>Subtotal</span>
+<div class="text-right">
+<span class="text-slate-800 font-semibold" id="modal-subtotal">$0.00</span>
+<span class="text-slate-400 text-[11px] ml-1" id="modal-subtotal-bs">(Bs. 0,00)</span>
+</div>
+</div>
+<div class="flex justify-between text-slate-500 font-medium">
+<span>IVA estimado (16%)</span>
+<div class="text-right">
+<span class="text-slate-800 font-semibold" id="modal-tax">$0.00</span>
+<span class="text-slate-400 text-[11px] ml-1" id="modal-tax-bs">(Bs. 0,00)</span>
+</div>
+</div>
+<div class="flex justify-between items-baseline text-sm font-bold text-slate-900 pt-2 border-t border-slate-200">
+<div>
+<span>Total a pagar</span>
+<p class="text-[10px] text-slate-400 font-normal">Disponible pago en $ y Pago Móvil</p>
+</div>
+<div class="text-right">
+<div class="text-slate-900 text-base font-extrabold" id="modal-total">$0.00</div>
+<div class="text-emerald-700 text-xs font-bold" id="modal-total-bs">Bs. 0,00</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-800 py-2.5 px-3 rounded-2xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-1.5 transition-all shadow-2xs" onclick="openPagoMovilModal()" type="button">
+<span>📲 Ver datos de Pago Móvil</span>
+<span class="text-[10px] text-slate-500 font-medium">(Banesco / BDV)</span>
+</button><button class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white py-3.5 px-4 rounded-2xl font-bold text-xs tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all" onclick="checkoutWhatsApp()">
+<!-- WhatsApp Icon SVG -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"></path>
+</svg>
+<span>Generar Orden y Enviar a WhatsApp</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal de Historial / Cola de Órdenes -->
+<div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-end justify-center p-0" id="orders-modal">
+<div class="bg-white w-full max-w-md rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+<div class="pt-3 pb-2 flex justify-center">
+<div class="w-10 h-1 bg-slate-200 rounded-full"></div>
+</div>
+<div class="px-5 pb-3 border-b border-slate-100 flex justify-between items-center">
+<div>
+<h2 class="font-bold text-base text-slate-900">Historial de Órdenes</h2>
+<p class="text-[11px] text-slate-400 font-medium">Órdenes generadas en este dispositivo</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition-colors" onclick="toggleOrdersModal()">
+                    ✕
+                </button>
+</div>
+<div class="p-5 overflow-y-auto space-y-3 flex-1 bg-slate-50/50" id="orders-list-container">
+<!-- Inyectado dinámicamente -->
+</div>
+</div>
+</div><!-- Modal Pago Móvil Completo con Copiado Interactivo -->
+<div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" id="pagomovil-modal">
+<div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200 max-h-[92vh] flex flex-col">
+<div class="pt-3 pb-1 flex justify-center sm:hidden">
+<div class="w-10 h-1 bg-slate-200 rounded-full"></div>
+</div>
+<!-- Cabecera del modal -->
+<div class="p-5 pb-3 border-b border-slate-100 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
+📱
+</div>
+<div>
+<h3 class="font-bold text-sm text-slate-900">Datos para Pago Móvil</h3>
+<p class="text-[11px] text-slate-400">Copia los datos de forma rápida para transferir</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition-colors" onclick="closePagoMovilModal()">
+✕
+</button>
+</div>
+<div class="p-5 overflow-y-auto space-y-4 flex-1">
+<!-- Selector de Banco -->
+<div class="space-y-1.5">
+<label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Selecciona Banco Destino</label>
+<div class="grid grid-cols-2 gap-2" id="bank-tabs">
+<button class="py-2 px-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-0.5 transition-all bg-emerald-50 border-emerald-500 text-emerald-900 shadow-2xs" id="btn-bank-banesco" onclick="selectBank('banesco')" type="button">
+<span class="font-black">Banesco</span>
+<span class="text-[10px] font-normal text-emerald-700">Código 0134</span>
+</button>
+<button class="py-2 px-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-0.5 transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50" id="btn-bank-bdv" onclick="selectBank('bdv')" type="button">
+<span class="font-black">Venezuela (BDV)</span>
+<span class="text-[10px] font-normal text-slate-400">Código 0102</span>
+</button>
+</div>
+</div>
+<!-- Tarjeta de Datos Detallados -->
+<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 space-y-2.5">
+<div class="flex justify-between items-center text-xs pb-1.5 border-b border-slate-200/60">
+<div>
+<p class="text-[10px] text-slate-400 font-semibold uppercase">Titular de la Cuenta</p>
+<p class="font-bold text-slate-800 text-xs mt-0.5" id="pm-titular">El Mago Store C.A.</p>
+</div>
+<button class="text-[10px] font-bold px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95 flex items-center gap-1" onclick="copyFieldValue('El Mago Store C.A.', this)">
+<span>Copiar</span>
+</button>
+</div>
+<div class="flex justify-between items-center text-xs pb-1.5 border-b border-slate-200/60">
+<div>
+<p class="text-[10px] text-slate-400 font-semibold uppercase">Banco y Código</p>
+<p class="font-bold text-slate-800 text-xs mt-0.5" id="pm-bank-display">Banesco (0134)</p>
+</div>
+<button class="text-[10px] font-bold px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95 flex items-center gap-1" onclick="copyBankCode(this)">
+<span>Copiar Código</span>
+</button>
+</div>
+<div class="flex justify-between items-center text-xs pb-1.5 border-b border-slate-200/60">
+<div>
+<p class="text-[10px] text-slate-400 font-semibold uppercase">Cédula / RIF</p>
+<p class="font-extrabold text-slate-900 text-xs mt-0.5" id="pm-doc-display">J-50123456-0</p>
+</div>
+<button class="text-[10px] font-bold px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95 flex items-center gap-1" onclick="copyDocValue(this)">
+<span>Copiar C.I./RIF</span>
+</button>
+</div>
+<div class="flex justify-between items-center text-xs">
+<div>
+<p class="text-[10px] text-slate-400 font-semibold uppercase">Teléfono Móvil</p>
+<p class="font-extrabold text-emerald-700 text-xs tracking-wide mt-0.5">0412-8965714</p>
+</div>
+<button class="text-[10px] font-bold px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95 flex items-center gap-1" onclick="copyFieldValue('04128965714', this)">
+<span>Copiar Teléfono</span>
+</button>
+</div>
+</div>
+<!-- Botón de Copiar Todos los Datos -->
+<button class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2" onclick="copyAllPagoMovil(this)" type="button">
+<svg class="w-4 h-4 fill-none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span id="copy-all-text">Copiar Todos los Datos de Pago Móvil</span>
+</button>
+<div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60 flex items-start gap-2">
+<span class="text-xs">📌</span>
+<p>Recuerda guardar la captura o número de referencia de la transferencia para adjuntarla al enviar tu pedido por WhatsApp.</p>
+</div>
+</div>
+<div class="p-4 border-t border-slate-100 bg-slate-50/50 flex justify-end">
+<button class="py-2 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-colors" onclick="closePagoMovilModal()" type="button">
+Entendido
+</button>
+</div>
+</div>
+</div>
+<!-- Modal Elegante para Cambiar / Ajustar Tasa de Cambio -->
+<div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity" id="rate-modal">
+<div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+<div class="pt-3 pb-1 flex justify-center sm:hidden">
+<div class="w-10 h-1 bg-slate-200 rounded-full"></div>
+</div>
+<div class="p-5 pb-3 border-b border-slate-100 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base">
+                💵
+            </div>
+<div>
+<h3 class="font-bold text-sm text-slate-900">Ajustar Tasa de Cambio</h3>
+<p class="text-[11px] text-slate-400">Recálculo automático en todo el catálogo</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition-colors" onclick="closeRateModal()">
+            ✕
+        </button>
+</div>
+<form class="p-5 space-y-4" onsubmit="handleRateSubmit(event)">
+<!-- Visualización actual & input -->
+<div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 space-y-2">
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-500 font-medium">Tasa activa:</span>
+<span class="font-extrabold text-slate-900" id="modal-current-rate-label">Bs. 36.50 / $</span>
+</div>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center font-bold text-xs text-slate-400">Bs.</span>
+<input class="w-full pl-9 pr-14 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-inner" id="rate-input" min="0.01" placeholder="0.00" required="" step="0.01" type="number"/>
+<span class="absolute inset-y-0 right-0 pr-3 flex items-center font-bold text-xs text-slate-400">/ USD</span>
+</div>
+</div>
+<!-- Botones de acceso rápido -->
+<div>
+<label class="text-[11px] font-semibold text-slate-500 block mb-1.5 uppercase tracking-wider">Ajustes Rápidos</label>
+<div class="grid grid-cols-4 gap-1.5">
+<button class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors active:scale-95" onclick="adjustRateBy(0.5)" type="button">+0.50</button>
+<button class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors active:scale-95" onclick="adjustRateBy(1.0)" type="button">+1.00</button>
+<button class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors active:scale-95" onclick="adjustRateBy(2.0)" type="button">+2.00</button>
+<button class="py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition-colors border border-emerald-200/60 active:scale-95" onclick="resetOfficialRate()" title="Restablecer a 36.50" type="button">BCV 36.50</button>
+</div>
+</div>
+<div class="text-[11px] text-slate-400 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100/60 flex items-start gap-2">
+<span class="text-xs">💡</span>
+<p>Al guardar, se actualizan inmediatamente los precios en bolívares de todos los productos, el carrito y el detalle de la orden de WhatsApp.</p>
+</div>
+<!-- Acciones Guardar / Cancelar -->
+<div class="flex items-center gap-2 pt-1">
+<button class="w-1/3 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-100 text-xs font-bold text-slate-600 transition-colors" onclick="closeRateModal()" type="button">
+                Cancelar
+            </button>
+<button class="w-2/3 py-2.5 px-3 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5" type="submit">
+<span>Guardar y Aplicar</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+        const DEFAULT_EXCHANGE_RATE = 36.50;
+        const RATE_STORAGE_KEY = 'store_exchange_rate';
+        
+        let savedRate = parseFloat(localStorage.getItem(RATE_STORAGE_KEY));
+        let EXCHANGE_RATE = (!isNaN(savedRate) && savedRate > 0) ? savedRate : DEFAULT_EXCHANGE_RATE;
+
+        function formatBs(amount) {
+            return 'Bs. ' + (amount).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const storeId = urlParams.get('store') || 'el-mago-store';
+        document.getElementById('store-name').innerText = storeId.replace('-', ' ').toUpperCase();
+
+        const products = [
+            { id: 1, name: "Harina Pan 1kg", category: "Víveres", price: 1.50, image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80" },
+            { id: 2, name: "Queso Llanero 1kg", category: "Lácteos", price: 5.00, image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=600&q=80" },
+            { id: 3, name: "Refresco Cola 2L", category: "Bebidas", price: 2.20, image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80" },
+            { id: 4, name: "Café Molido 250g", category: "Víveres", price: 4.50, image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=600&q=80" },
+            { id: 5, name: "Detergente 1kg", category: "Limpieza", price: 3.80, image: "https://images.unsplash.com/photo-1585421514738-01798e348b17?auto=format&fit=crop&w=600&q=80" },
+            { id: 6, name: "Arroz Blanco 1kg", category: "Víveres", price: 1.30, image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80" },
+            { id: 7, name: "Pasta Larga 500g", category: "Víveres", price: 1.25, image: "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=600&q=80" },
+            { id: 8, name: "Aceite Vegetal 1L", category: "Víveres", price: 3.20, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80" },
+            { id: 9, name: "Leche Completa 1L", category: "Lácteos", price: 2.10, image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80" },
+            { id: 10, name: "Mantequilla con Sal 250g", category: "Lácteos", price: 2.80, image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=600&q=80" }
+        ];
+
+        const CART_KEY = `cart_${storeId}`;
+        const ORDERS_KEY = `orders_queue_${storeId}`;
+
+        let cart = JSON.parse(localStorage.getItem(CART_KEY)) || {};
+        let ordersQueue = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+        let currentCategory = 'Todos';
+        let uploadedReceiptBase64 = null;
+        let uploadedReceiptName = '';
+
+        // Manejo de carga de comprobante
+        function handleReceiptUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validar tamaño máx ~5MB
+            if (file.size > 5 * 1024 * 1024) {
+                alert('La imagen seleccionada supera los 5MB. Por favor elige una imagen más ligera.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedReceiptBase64 = e.target.result;
+                uploadedReceiptName = file.name;
+
+                document.getElementById('receipt-dropzone').classList.add('hidden');
+                const previewContainer = document.getElementById('receipt-preview-container');
+                previewContainer.classList.remove('hidden');
+                document.getElementById('receipt-preview-img').src = uploadedReceiptBase64;
+                document.getElementById('receipt-file-name').innerText = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeReceiptFile(event) {
+            if (event) event.stopPropagation();
+            uploadedReceiptBase64 = null;
+            uploadedReceiptName = '';
+            const fileInput = document.getElementById('pay-receipt-file');
+            if (fileInput) fileInput.value = '';
+            document.getElementById('receipt-preview-container').classList.add('hidden');
+            document.getElementById('receipt-dropzone').classList.remove('hidden');
+        }
+
+        // Datos y funciones del modal Pago Móvil
+        let selectedBankKey = 'banesco';
+        const bankData = {
+            banesco: {
+                name: 'Banesco (0134)',
+                code: '0134',
+                doc: 'J-50123456-0',
+                holder: 'El Mago Store C.A.',
+                phone: '04128965714',
+                phoneFormatted: '0412-8965714'
+            },
+            bdv: {
+                name: 'Banco de Venezuela (0102)',
+                code: '0102',
+                doc: 'V-24890123',
+                holder: 'El Mago Store C.A.',
+                phone: '04128965714',
+                phoneFormatted: '0412-8965714'
+            }
+        };
+
+        function selectBank(bankKey) {
+            selectedBankKey = bankKey;
+            const data = bankData[bankKey];
+            document.getElementById('pm-titular').innerText = data.holder;
+            document.getElementById('pm-bank-display').innerText = data.name;
+            document.getElementById('pm-doc-display').innerText = data.doc;
+
+            const btnBanesco = document.getElementById('btn-bank-banesco');
+            const btnBdv = document.getElementById('btn-bank-bdv');
+
+            if (bankKey === 'banesco') {
+                btnBanesco.className = "py-2 px-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-0.5 transition-all bg-emerald-50 border-emerald-500 text-emerald-900 shadow-2xs";
+                btnBdv.className = "py-2 px-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-0.5 transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+            } else {
+                btnBdv.className = "py-2 px-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-0.5 transition-all bg-emerald-50 border-emerald-500 text-emerald-900 shadow-2xs";
+                btnBanesco.className = "py-2 px-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-0.5 transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+            }
+        }
+
+        function openPagoMovilModal() {
+            document.getElementById('pagomovil-modal').classList.remove('hidden');
+        }
+
+        function closePagoMovilModal() {
+            document.getElementById('pagomovil-modal').classList.add('hidden');
+        }
+
+        function copyFieldValue(val, btnEl) {
+            navigator.clipboard.writeText(val).then(() => {
+                const oldText = btnEl.innerHTML;
+                btnEl.innerHTML = `<span class="text-emerald-600 font-bold">¡Copiado!</span>`;
+                setTimeout(() => { btnEl.innerHTML = oldText; }, 1500);
+            });
+        }
+
+        function copyBankCode(btnEl) {
+            copyFieldValue(bankData[selectedBankKey].code, btnEl);
+        }
+
+        function copyDocValue(btnEl) {
+            copyFieldValue(bankData[selectedBankKey].doc, btnEl);
+        }
+
+        function copyAllPagoMovil(btnEl) {
+            const data = bankData[selectedBankKey];
+            const text = `PAGO MÓVIL EL MAGO STORE\nBanco: ${data.name}\nCédula/RIF: ${data.doc}\nTeléfono: ${data.phoneFormatted}\nTitular: ${data.holder}`;
+            navigator.clipboard.writeText(text).then(() => {
+                const label = document.getElementById('copy-all-text');
+                const old = label.innerText;
+                label.innerText = '¡Todos los datos copiados al portapapeles!';
+                setTimeout(() => { label.innerText = old; }, 2000);
+            });
+        }
+
+        function updateRateHeaderUI() {
+            const formatted = `Bs. ${EXCHANGE_RATE.toFixed(2)} / $`;
+            const headerDisplay = document.getElementById('exchange-rate-display');
+            if (headerDisplay) headerDisplay.innerText = formatted;
+            
+            const modalDisplay = document.getElementById('cart-modal-rate-display');
+            if (modalDisplay) modalDisplay.innerText = formatted;
+
+            const customBadge = document.getElementById('custom-rate-badge');
+            if (customBadge) {
+                if (Math.abs(EXCHANGE_RATE - DEFAULT_EXCHANGE_RATE) > 0.001) {
+                    customBadge.classList.remove('hidden');
+                } else {
+                    customBadge.classList.add('hidden');
+                }
+            }
+
+            const modalCurrentRateLabel = document.getElementById('modal-current-rate-label');
+            if (modalCurrentRateLabel) modalCurrentRateLabel.innerText = formatted;
+        }
+
+        function openRateModal() {
+            document.getElementById('rate-input').value = EXCHANGE_RATE.toFixed(2);
+            updateRateHeaderUI();
+            document.getElementById('rate-modal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('rate-input').focus();
+                document.getElementById('rate-input').select();
+            }, 50);
+        }
+
+        function closeRateModal() {
+            document.getElementById('rate-modal').classList.add('hidden');
+        }
+
+        function adjustRateBy(delta) {
+            let current = parseFloat(document.getElementById('rate-input').value) || EXCHANGE_RATE;
+            let updated = (current + delta);
+            if (updated < 0.01) updated = 0.01;
+            document.getElementById('rate-input').value = updated.toFixed(2);
+        }
+
+        function resetOfficialRate() {
+            document.getElementById('rate-input').value = DEFAULT_EXCHANGE_RATE.toFixed(2);
+        }
+
+        function handleRateSubmit(e) {
+            e.preventDefault();
+            const val = parseFloat(document.getElementById('rate-input').value);
+            if (isNaN(val) || val <= 0) {
+                alert('Por favor introduce una tasa válida mayor a 0');
+                return;
+            }
+            EXCHANGE_RATE = val;
+            localStorage.setItem(RATE_STORAGE_KEY, val.toString());
+            
+            updateRateHeaderUI();
+            renderProducts();
+            updateCartUI();
+            closeRateModal();
+        }
+
+        function initApp() {
+            updateRateHeaderUI();
+            renderCategories();
+            renderProducts();
+            updateCartUI();
+            updateOrdersBadge();
+        }
+
+        function renderCategories() {
+            const categories = ['Todos', ...new Set(products.map(p => p.category))];
+            const container = document.getElementById('category-tabs');
+            container.innerHTML = categories.map(cat => {
+                const isActive = currentCategory === cat;
+                return `
+                    <button onclick="setCategory('${cat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+                        isActive 
+                        ? 'bg-slate-900 text-white shadow-xs' 
+                        : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/70'
+                    }">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const search = document.getElementById('search-input').value.toLowerCase().trim();
+            const grid = document.getElementById('product-grid');
+            const countLabel = document.getElementById('results-count');
+
+            const filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'Todos' || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(search);
+                return matchesCat && matchesSearch;
+            });
+
+            countLabel.innerText = `${filtered.length} producto${filtered.length === 1 ? '' : 's'}`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-2 py-16 text-center">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+                            🔍
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700">Sin resultados</p>
+                        <p class="text-xs text-slate-400 mt-1">Prueba con otra palabra o categoría.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const qty = cart[p.id] || 0;
+                const priceBs = (p.price * EXCHANGE_RATE).toFixed(2);
+                return `
+                    <div class="bg-white rounded-2xl p-2.5 border border-slate-100 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group">
+                        <div>
+                            <!-- Imagen y Badges -->
+                            <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-slate-50/80 mb-2.5 flex items-center justify-center">
+                                <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${p.name}" loading="lazy">
+                                <span class="absolute top-2 left-2 text-[10px] font-semibold bg-white/95 backdrop-blur-xs text-slate-700 px-2 py-0.5 rounded-md shadow-xs">
+                                    ${p.category}
+                                </span>
+                                ${qty > 0 ? `
+                                    <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-in zoom-in-75">
+                                        ${qty}
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <!-- Información con Dual Pricing -->
+                            <h3 class="font-bold text-xs text-slate-900 leading-snug line-clamp-1">${p.name}</h3>
+                            <div class="mt-1 flex flex-col">
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-sm font-extrabold text-slate-900">$${p.price.toFixed(2)}</span>
+                                    <span class="text-[10px] text-slate-400">c/u</span>
+                                </div>
+                                <span class="text-[11px] font-bold text-emerald-700">Bs. ${Number(priceBs).toLocaleString('es-VE', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Acción -->
+                        <div class="mt-3">
+                            ${qty > 0 ? `
+                                <div class="flex items-center justify-between bg-slate-100 rounded-xl p-1">
+                                    <button onclick="updateQty(${p.id}, -1)" class="w-7 h-7 bg-white hover:bg-slate-200 text-slate-900 rounded-lg font-black text-xs flex items-center justify-center transition-colors shadow-2xs active:scale-95">−</button>
+                                    <span class="text-xs font-bold text-slate-900 px-2">${qty}</span>
+                                    <button onclick="updateQty(${p.id}, 1)" class="w-7 h-7 bg-slate-900 hover:bg-black text-white rounded-lg font-black text-xs flex items-center justify-center transition-colors shadow-2xs active:scale-95">+</button>
+                                </div>
+                            ` : `
+                                <button onclick="updateQty(${p.id}, 1)" class="w-full bg-slate-900 hover:bg-black active:scale-[0.98] text-white py-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5">
+                                    <span>Agregar</span>
+                                    <span class="text-xs opacity-70">+</span>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterProducts() {
+            renderProducts();
+        }
+
+        function updateQty(id, change) {
+            cart[id] = (cart[id] || 0) + change;
+            if (cart[id] <= 0) delete cart[id];
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+            renderProducts();
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            let totalItems = 0;
+            let subtotal = 0;
+            let itemsListHtml = '';
+
+            for (let id in cart) {
+                let qty = cart[id];
+                let product = products.find(p => p.id == id);
+                if (!product) continue;
+                let itemTotal = product.price * qty;
+                let itemTotalBs = itemTotal * EXCHANGE_RATE;
+                totalItems += qty;
+                subtotal += itemTotal;
+
+                itemsListHtml += `
+                    <div class="flex items-center justify-between pt-3 first:pt-0">
+                        <div class="flex items-center gap-3">
+                            <img src="${product.image}" class="w-12 h-12 rounded-xl object-cover bg-slate-100 border border-slate-100" alt="${product.name}">
+                            <div>
+                                <p class="font-bold text-xs text-slate-900">${product.name}</p>
+                                <p class="text-[11px] text-slate-500 font-medium">$${product.price.toFixed(2)} • <span class="text-emerald-700 font-semibold">${formatBs(product.price * EXCHANGE_RATE)}</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex items-center bg-slate-100 rounded-lg p-0.5">
+                                <button onclick="updateQty(${id}, -1)" class="w-6 h-6 bg-white rounded-md text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50 flex items-center justify-center">−</button>
+                                <span class="text-xs font-bold text-slate-900 px-1.5">${qty}</span>
+                                <button onclick="updateQty(${id}, 1)" class="w-6 h-6 bg-white rounded-md text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50 flex items-center justify-center">+</button>
+                            </div>
+                            <div class="text-right w-16">
+                                <p class="font-bold text-xs text-slate-900">$${itemTotal.toFixed(2)}</p>
+                                <p class="text-[10px] font-semibold text-emerald-700">${formatBs(itemTotalBs)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let tax = subtotal * 0.16;
+            let total = subtotal + tax;
+
+            let subtotalBs = subtotal * EXCHANGE_RATE;
+            let taxBs = tax * EXCHANGE_RATE;
+            let totalBs = total * EXCHANGE_RATE;
+
+            const paymentSection = document.getElementById('payment-details-section');
+
+            if (totalItems === 0) {
+                document.getElementById('cart-items-list').innerHTML = `
+                    <div class="text-center py-12">
+                        <p class="text-slate-400 text-xs">Tu carrito está vacío</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Agrega productos del catálogo para comenzar.</p>
+                    </div>
+                `;
+                if (paymentSection) paymentSection.classList.add('hidden');
+            } else {
+                document.getElementById('cart-items-list').innerHTML = itemsListHtml;
+                if (paymentSection) paymentSection.classList.remove('hidden');
+            }
+
+            document.getElementById('modal-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('modal-subtotal-bs').innerText = `(${formatBs(subtotalBs)})`;
+            
+            document.getElementById('modal-tax').innerText = `$${tax.toFixed(2)}`;
+            document.getElementById('modal-tax-bs').innerText = `(${formatBs(taxBs)})`;
+            
+            document.getElementById('modal-total').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('modal-total-bs').innerText = formatBs(totalBs);
+
+            const cartBar = document.getElementById('cart-bar');
+            const cartBadgeHeader = document.getElementById('cart-badge-header');
+
+            if (totalItems > 0) {
+                cartBar.classList.remove('hidden');
+                cartBadgeHeader.classList.remove('hidden');
+                cartBadgeHeader.innerText = totalItems;
+                document.getElementById('cart-bar-count').innerText = `${totalItems} ítem${totalItems > 1 ? 's' : ''}`;
+                document.getElementById('cart-total-bar').innerText = `$${total.toFixed(2)}`;
+                document.getElementById('cart-total-bar-bs').innerText = formatBs(totalBs);
+            } else {
+                cartBar.classList.add('hidden');
+                cartBadgeHeader.classList.add('hidden');
+                document.getElementById('cart-modal').classList.add('hidden');
+            }
+        }
+
+        function toggleCartModal() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        }
+
+        function toggleOrdersModal() {
+            renderOrdersQueue();
+            document.getElementById('orders-modal').classList.toggle('hidden');
+        }
+
+        function generateUniqueOrderId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return `ORD-${code}`;
+        }
+
+        function checkoutWhatsApp() {
+            if (Object.keys(cart).length === 0) return;
+
+            const orderId = generateUniqueOrderId();
+            const timestamp = new Date().toLocaleString();
+
+            const payMethod = document.getElementById('pay-method-select') ? document.getElementById('pay-method-select').value : 'Pago Móvil';
+            const payRef = document.getElementById('pay-ref-input') ? document.getElementById('pay-ref-input').value.trim() : '';
+            const payHolder = document.getElementById('pay-holder-input') ? document.getElementById('pay-holder-input').value.trim() : '';
+            const hasReceiptAttached = Boolean(uploadedReceiptBase64);
+
+            let subtotal = 0;
+            let orderItems = [];
+
+            for (let id in cart) {
+                let qty = cart[id];
+                let product = products.find(p => p.id == id);
+                let itemTotal = product.price * qty;
+                subtotal += itemTotal;
+                orderItems.push({ name: product.name, qty: qty, price: product.price, total: itemTotal });
+            }
+
+            let tax = subtotal * 0.16;
+            let total = subtotal + tax;
+
+            let subtotalBs = subtotal * EXCHANGE_RATE;
+            let taxBs = tax * EXCHANGE_RATE;
+            let totalBs = total * EXCHANGE_RATE;
+
+            const newOrder = {
+                orderId: orderId,
+                date: timestamp,
+                items: orderItems,
+                subtotal: subtotal,
+                tax: tax,
+                total: total,
+                totalBs: totalBs,
+                rateUsed: EXCHANGE_RATE,
+                payMethod: payMethod,
+                payRef: payRef || null,
+                payHolder: payHolder || null,
+                receiptImage: uploadedReceiptBase64 || null
+            };
+
+            ordersQueue.unshift(newOrder);
+            localStorage.setItem(ORDERS_KEY, JSON.stringify(ordersQueue));
+            updateOrdersBadge();
+
+            let message = `🛒 *NUEVO PEDIDO - ${storeId.toUpperCase()}*\n`;
+            message += `🆔 *Nº de Orden:* *${orderId}*\n`;
+            message += `📅 *Fecha:* ${timestamp}\n`;
+            message += `💵 *Tasa BCV del día:* Bs. ${EXCHANGE_RATE.toFixed(2)} / $\n`;
+            message += `----------------------------------\n`;
+            
+            orderItems.forEach(item => {
+                let itemTotalBs = item.total * EXCHANGE_RATE;
+                message += `• ${item.qty}x ${item.name} ($${item.price.toFixed(2)} / ${formatBs(item.price * EXCHANGE_RATE)}) = *$${item.total.toFixed(2)}* (${formatBs(itemTotalBs)})\n`;
+            });
+
+            message += `----------------------------------\n`;
+            message += `📦 *Subtotal:* $${subtotal.toFixed(2)} (${formatBs(subtotalBs)})\n`;
+            message += `🧾 *IVA (16%):* $${tax.toFixed(2)} (${formatBs(taxBs)})\n`;
+            message += `💰 *TOTAL FINAL USD: $${total.toFixed(2)}*\n`;
+            message += `🇻🇪 *TOTAL FINAL BS: ${formatBs(totalBs)}*\n`;
+            message += `----------------------------------\n`;
+            message += `💳 *INFORMACIÓN DE PAGO:*\n`;
+            message += `• Método/Banco: *${payMethod}*\n`;
+            if (payRef) {
+                message += `• Nº de Referencia: *${payRef}*\n`;
+            }
+            if (payHolder) {
+                message += `• Titular Cuenta: *${payHolder}*\n`;
+            }
+            if (hasReceiptAttached) {
+                message += `📎 *Comprobante cargado en web:* (Te lo adjunto a continuación por aquí en la imagen)\n`;
+            } else {
+                message += `• Comprobante: Pendiente por enviar\n`;
+            }
+            message += `----------------------------------\n`;
+            message += `🏦 *DATOS PAGO MÓVIL TIENDA:*\n`;
+            message += `• Banco: Banesco (0134)\n`;
+            message += `• Teléfono: 0412-8965714\n`;
+            message += `• C.I./RIF: J-50123456-0\n`;
+            message += `----------------------------------\n`;
+            message += `¡Hola! Mi orden es la *${orderId}*. ` + (hasReceiptAttached ? `Ya adjunté los detalles del pago y te comparto la captura del comprobante.` : `En breve realizo el pago y envío el comprobante.`);
+
+            let phoneOwner = "584128965714";
+            let url = `https://wa.me/${phoneOwner}?text=${encodeURIComponent(message)}`;
+            
+            // Limpiar formulario y carrito
+            removeReceiptFile();
+            const refInput = document.getElementById('pay-ref-input');
+            if (refInput) refInput.value = '';
+            const holderInput = document.getElementById('pay-holder-input');
+            if (holderInput) holderInput.value = '';
+
+            localStorage.removeItem(CART_KEY);
+            cart = {};
+            toggleCartModal();
+            updateCartUI();
+
+            window.open(url, '_blank');
+        }
+
+        function renderOrdersQueue() {
+            const container = document.getElementById('orders-list-container');
+            if (ordersQueue.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mx-auto mb-2 text-sm">📦</div>
+                        <p class="text-xs font-semibold text-slate-600">No hay órdenes registradas aún</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Tus pedidos enviados aparecerán aquí.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = ordersQueue.map(order => `
+                <div class="bg-white border border-slate-200/80 rounded-2xl p-3.5 space-y-2.5 shadow-2xs">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-xs text-slate-900 tracking-wide">${order.orderId}</span>
+                            ${order.payRef ? `<span class="bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-[10px] font-bold px-1.5 py-0.5 rounded-md">Ref: ${order.payRef}</span>` : ''}
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-medium">${order.date}</span>
+                    </div>
+
+                    <!-- Detalles del pago registrado -->
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-2 text-[11px] flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-slate-800 text-[11px]">${order.payMethod || 'Pago Móvil'}</p>
+                            ${order.payHolder ? `<p class="text-[10px] text-slate-500">Titular: ${order.payHolder}</p>` : ''}
+                        </div>
+                        ${order.receiptImage ? `
+                            <a href="${order.receiptImage}" target="_blank" class="flex items-center gap-1.5 group" title="Ver comprobante adjunto">
+                                <img src="${order.receiptImage}" class="w-8 h-8 rounded-lg object-cover border border-emerald-300 ring-1 ring-emerald-500/20 group-hover:scale-105 transition-transform" alt="Comprobante">
+                                <span class="text-[10px] text-emerald-700 font-bold group-hover:underline">Ver</span>
+                            </a>
+                        ` : `
+                            <span class="text-[10px] text-slate-400 italic">Sin comprobante img</span>
+                        `}
+                    </div>
+
+                    <div class="text-[11px] text-slate-600 space-y-1">
+                        ${order.items.map(i => `<div class="flex justify-between"><span>${i.qty}x ${i.name}</span><span class="font-semibold text-slate-700">$${i.total.toFixed(2)} (${formatBs(i.total * (order.rateUsed || EXCHANGE_RATE))})</span></div>`).join('')}
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                        <span class="text-slate-400 font-medium">Total facturado:</span>
+                        <div class="text-right">
+                            <span class="font-extrabold text-slate-900">$${order.total.toFixed(2)}</span>
+                            <span class="font-bold text-emerald-700 ml-1">/ ${formatBs(order.totalBs || (order.total * EXCHANGE_RATE))}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateOrdersBadge() {
+            const badge = document.getElementById('orders-badge');
+            if (ordersQueue.length > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        initApp();
+    </script>
+</body></html>

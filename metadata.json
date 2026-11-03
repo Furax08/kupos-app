@@ -1,0 +1,6 @@
+{
+  "name": "Lumina POS & Multi-Rate Inventory",
+  "description": "Minimalist multi-currency & crypto POS, inventory, debtor tracking, and virtual catalog system with subscription management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tienda - SaaS POS, Inventario y Catálogo Virtual</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
+
+    <!-- Main App Container -->
+    <div id="app" class="flex-1 flex flex-col">
+        <!-- Dynamically Rendered Views -->
+    </div>
+
+    <!-- Custom Modal Container -->
+    <div id="modal-container" class="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4"></div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // --- CONSTANTS & DEFAULT STATE ---
+        const ADMIN_EMAIL = "furax030@gmail.com";
+        const STORAGE_KEY = "mi_tienda_saas_state_v1";
+
+        const defaultState = {
+            view: 'auth', // auth, admin, setup, main, public_catalog
+            currentUser: null, // { email, role, status ('pending'|'approved'), token, storeName, fullName, dni, country }
+            users: [
+                { email: ADMIN_EMAIL, role: 'admin', status: 'approved', token: 'ADMIN-TOKEN-000', storeName: 'Admin Central', fullName: 'Super Admin', dni: 'V-00000000', country: 'VE' }
+            ],
+            storesConfig: {
+                maxStores: 3,
+                maxBranches: 2,
+                stores: []
+            },
+            rates: {
+                refUSD: 1.0,
+                primaryCurrency: 'VES',
+                primaryRate: 36.50, // 1 USD = 36.50 VES
+                secondaryCurrency: 'COP',
+                secondaryRate: 4100.0, // 1 USD = 4100 COP
+                crypto: {
+                    BTC: 65000.0,
+                    BNB: 580.0,
+                    USDT: 1.0,
+                    USDC: 1.0,
+                    ETH: 3500.0
+                }
+            },
+            products: [
+                { id: 'p1', name: 'Café Arábica Gourmet 500g', brand: 'Cafetal', category: 'Alimentos', unit: 'unidad', barcode: '7591234567890', expiry: '2027-12-31', cost: 6.50, margin: 50, price: 9.75, image: 'https://placehold.co/300x300/1e293b/6366f1?text=Cafe', stock: 45, minStock: 5, showCatalog: true },
+                { id: 'p2', name: 'Harina de Maíz Precocida 1kg', brand: 'HarinaMAX', category: 'Alimentos', unit: 'unidad', barcode: '7599876543210', expiry: '2026-08-15', cost: 1.10, margin: 30, price: 1.43, image: 'https://placehold.co/300x300/1e293b/6366f1?text=Harina', stock: 120, minStock: 15, showCatalog: true },
+                { id: 'p3', name: 'Queso Llanero Madurado', brand: 'Artesanal', category: 'Lácteos', unit: 'peso', barcode: '7591112223334', expiry: '2026-04-10', cost: 4.00, margin: 40, price: 5.60, image: 'https://placehold.co/300x300/1e293b/6366f1?text=Queso', stock: 8, minStock: 10, showCatalog: true },
+                { id: 'p4', name: 'Smartphone Android 128GB', brand: 'TechPro', category: 'Tecnología', unit: 'unidad', barcode: '7594445556667', expiry: '2030-01-01', cost: 110.0, margin: 35, price: 148.50, image: 'https://placehold.co/300x300/1e293b/6366f1?text=Telefono', stock: 12, minStock: 3, showCatalog: true }
+            ],
+            categories: ['Alimentos', 'Lácteos', 'Tecnología', 'Bebidas', 'Limpieza', 'Ropa'],
+            carts: [
+                { id: 'c1', name: 'Carrito de Juan', items: [] },
+                { id: 'c2', name: 'José (Mostrador)', items: [] }
+            ],
+            activeCartId: 'c1',
+            coupons: [
+                { code: 'PROMO1MES', type: 'months', value: 1, multiUse: true, expiry: '2026-12-31' },
+                { code: 'DESC20', type: 'percent', value: 20, multiUse: true, expiry: '2026-06-30' },
+                { code: 'VIPONESHOT', type: 'months', value: 3, multiUse: false, expiry: '2026-12-31' }
+            ],
+            expenses: [
+                { id: 'e1', date: '2026-10-25', description: 'Pago de Electricidad', amount: 45.0, currency: 'USD' },
+                { id: 'e2', date: '2026-10-26', description: 'Papelería e Insumos', amount: 15.5, currency: 'USD' }
+            ],
+            caja: {
+                isOpen: true,
+                openedAt: '2026-10-27 08:00',
+                initialAmountUSD: 50.0,
+                cashSalesUSD: 245.0,
+                cardSalesUSD: 120.0,
+                creditSalesUSD: 85.0
+            },
+            salesHistory: []
+        };
+
+        let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState;
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgCol = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-brand-600';
+            toast.className = `${bgCol} text-white px-4 py-3 rounded-xl shadow-xl flex items-center justify-between gap-3 text-sm animate-bounce duration-300`;
+            toast.innerHTML = `<span><i class="fa-solid fa-circle-info mr-2"></i>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function copyToClipboard(text, label) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(`${label} copiado al portapapeles con éxito.`);
+            } catch (err) {
+                showToast('Error al copiar al portapapeles', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function formatCurrency(amountUSD) {
+            const r = appState.rates;
+            const primary = (amountUSD * r.primaryRate).toFixed(2);
+            const secondary = (amountUSD * r.secondaryRate).toFixed(2);
+            return `$${amountUSD.toFixed(2)} USD <span class="text-xs text-slate-400 font-normal">(${primary} ${r.primaryCurrency} / ${secondary} ${r.secondaryCurrency})</span>`;
+        }
+
+        // --- RENDER ROUTER ---
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+
+            // Check view routing
+            if (appState.view === 'auth') {
+                app.innerHTML = renderAuthScreen();
+            } else if (appState.view === 'admin') {
+                app.innerHTML = renderAdminScreen();
+            } else if (appState.view === 'setup') {
+                app.innerHTML = renderStoreSetupScreen();
+            } else if (appState.view === 'main') {
+                app.innerHTML = renderMainDashboard();
+            } else if (appState.view === 'public_catalog') {
+                app.innerHTML = renderPublicCatalogScreen();
+            }
+        }
+
+        // --- 1. AUTH & SUBSCRIPTION GATE ---
+        let authMode = 'login'; // login, register, payment, coupon
+        let pendingRegData = null;
+
+        function renderAuthScreen() {
+            return `
+            <div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+                <div class="max-w-md w-full bg-slate-800/80 backdrop-blur-xl border border-slate-700/60 rounded-3xl p-8 shadow-2xl">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-violet-500 text-white text-2xl font-bold shadow-lg shadow-brand-500/30 mb-4">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold text-white">Mi Tienda SaaS</h1>
+                        <p class="text-xs text-slate-400 mt-1">POS, Inventario y Catálogo Virtual Profesional</p>
+                    </div>
+
+                    ${authMode === 'login' ? `
+                        <form onsubmit="handleLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Correo Electrónico ✉️</label>
+                                <input type="email" id="login-email" required placeholder="tucorreo@empresa.com" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Contraseña 🔑</label>
+                                <input type="password" id="login-pass" required placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 text-white">
+                            </div>
+                            <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-500 hover:to-violet-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30 transition">
+                                Iniciar Sesión 🚀
+                            </button>
+                            <div class="text-center mt-4">
+                                <button type="button" onclick="authMode='register'; render();" class="text-xs text-brand-400 hover:underline">¿No tienes cuenta? Regístrate aquí</button>
+                            </div>
+                        </form>
+                    ` : authMode === 'register' ? `
+                        <form onsubmit="handleRegisterStart(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Correo Electrónico ✉️</label>
+                                <input type="email" id="reg-email" required placeholder="tucorreo@empresa.com" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Contraseña 🔑</label>
+                                <input type="password" id="reg-pass" required placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1">Selecciona tu Plan de Suscripción</label>
+                                <select id="reg-plan" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 text-white">
+                                    <option value="monthly">Plan Mensual - $2.99 / mes</option>
+                                    <option value="yearly">Plan Anual - $29.99 / año (Ahorra 16%)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-emerald-600/30 transition">
+                                Continuar al Pago 💳
+                            </button>
+                            <div class="text-center mt-4">
+                                <button type="button" onclick="authMode='login'; render();" class="text-xs text-brand-400 hover:underline">← Volver al Login</button>
+                            </div>
+                        </form>
+                    ` : authMode === 'payment' ? `
+                        <div class="space-y-4">
+                            <div class="bg-indigo-950/50 border border-indigo-800/50 p-4 rounded-2xl">
+                                <h2 class="text-sm font-bold text-indigo-200 mb-1"><i class="fa-solid fa-lock mr-2"></i>Pasarela de Pago Segura</h2>
+                                <p class="text-xs text-slate-300">Realiza el pago de tu suscripción seleccionando uno de nuestros métodos oficiales:</p>
+                            </div>
+
+                            <div class="space-y-3 text-xs">
+                                <!-- Binance ID -->
+                                <div class="bg-slate-900/90 border border-slate-700 p-3 rounded-xl flex items-center justify-between">
+                                    <div>
+                                        <span class="font-semibold text-amber-400 block"><i class="fa-solid fa-bolt mr-1"></i> Binance ID</span>
+                                        <span class="text-slate-200 font-mono text-sm">190696956</span>
+                                    </div>
+                                    <button onclick="copyToClipboard('190696956', 'Binance ID')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+
+                                <!-- USDT BEP20 -->
+                                <div class="bg-slate-900/90 border border-slate-700 p-3 rounded-xl flex items-center justify-between">
+                                    <div>
+                                        <span class="font-semibold text-emerald-400 block"><i class="fa-brands fa-bitcoin mr-1"></i> USDT (BSC / BEP20)</span>
+                                        <span class="text-slate-300 font-mono text-[11px] truncate max-w-[200px] block">0x879b5915a6388c399a4fc8cf67996524530c6131</span>
+                                    </div>
+                                    <button onclick="copyToClipboard('0x879b5915a6388c399a4fc8cf67996524530c6131', 'USDT BEP20')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+
+                                <!-- Bitcoin -->
+                                <div class="bg-slate-900/90 border border-slate-700 p-3 rounded-xl flex items-center justify-between">
+                                    <div>
+                                        <span class="font-semibold text-orange-400 block"><i class="fa-brands fa-btc mr-1"></i> Bitcoin (Red BTC)</span>
+                                        <span class="text-slate-300 font-mono text-[11px] truncate max-w-[200px] block">148k6knh8BKRP17PBJWACyc9xwbooUE8H1</span>
+                                    </div>
+                                    <button onclick="copyToClipboard('148k6knh8BKRP17PBJWACyc9xwbooUE8H1', 'Bitcoin Address')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- QR Code Preview Box -->
+                            <div class="text-center bg-slate-900 p-4 rounded-xl border border-slate-700">
+                                <p class="text-xs font-semibold text-slate-300 mb-2">Escanea con la App de Binance (Furax88)</p>
+                                <div class="inline-block bg-white p-2 rounded-lg">
+                                    <svg class="w-28 h-28 mx-auto" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                                        <rect width="100" height="100" fill="white"/>
+                                        <rect x="10" y="10" width="30" height="30" fill="black"/>
+                                        <rect x="60" y="10" width="30" height="30" fill="black"/>
+                                        <rect x="10" y="60" width="30" height="30" fill="black"/>
+                                        <rect x="45" y="45" width="10" height="10" fill="#f59e0b"/>
+                                        <rect x="20" y="20" width="10" height="10" fill="white"/>
+                                        <rect x="70" y="20" width="10" height="10" fill="white"/>
+                                        <rect x="20" y="70" width="10" height="10" fill="white"/>
+                                        <path d="M50 10 v30 M10 50 h30 M60 60 h30 M60 80 v10 M80 60 v20" stroke="black" stroke-width="4"/>
+                                    </svg>
+                                </div>
+                                <span class="text-[10px] text-amber-400 font-bold block mt-1">Binance Pay ID / Nickname: Furax88</span>
+                            </div>
+
+                            <!-- Receipt Submission -->
+                            <form onsubmit="submitPaymentProof(event)" class="space-y-3 pt-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Nº de Referencia o Hash de Pago</label>
+                                    <input type="text" id="pay-ref" required placeholder="Ej. 88492019482 o TXID..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">Subir Comprobante (Imagen)</label>
+                                    <input type="file" id="pay-file" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-600 file:text-white hover:file:bg-brand-500">
+                                </div>
+                                <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 rounded-xl text-sm shadow-lg shadow-emerald-600/30">
+                                    Enviar Comprobante y Registrarse 🚀
+                                </button>
+                            </form>
+
+                            <!-- Coupon Redemption Box on Main Auth -->
+                            <div class="border-t border-slate-700 pt-3 mt-3">
+                                <label class="block text-xs font-medium text-slate-300 mb-1">¿Tienes un código de canje?</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="auth-coupon-code" placeholder="Ej. PROMO1MES" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white uppercase font-mono">
+                                    <button type="button" onclick="applyAuthCoupon()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-xl text-xs font-semibold">Canjear</button>
+                                </div>
+                            </div>
+                        </div>
+                    ` : authMode === 'pending' ? `
+                        <div class="text-center space-y-4 py-6">
+                            <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto text-2xl animate-pulse">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-white">¡Suscripción en Revisión!</h2>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Hemos recibido tu comprobante. El administrador maestro verificará tu pago y aprobará tu cuenta (Token ID: <span class="text-amber-400 font-mono font-bold">${pendingRegData?.token}</span>) en breve.
+                            </p>
+                            <button onclick="authMode='login'; render();" class="w-full bg-slate-700 hover:bg-slate-600 text-white text-xs py-3 rounded-xl font-semibold">
+                                Volver al Inicio de Sesión
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>`;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value;
+
+            // Check Admin
+            if (email === ADMIN_EMAIL) {
+                const adminUser = appState.users.find(u => u.email === ADMIN_EMAIL);
+                appState.currentUser = adminUser;
+                saveState();
+                appState.view = 'admin';
+                render();
+                showToast('Bienvenido al Panel Secreto de Administrador 👑');
+                return;
+            }
+
+            const found = appState.users.find(u => u.email === email);
+            if (!found) {
+                showToast('Usuario no encontrado. Por favor regístrese.', 'error');
+                return;
+            }
+
+            if (found.status !== 'approved') {
+                showToast('Tu cuenta está pendiente de aprobación por el administrador.', 'error');
+                return;
+            }
+
+            appState.currentUser = found;
+            saveState();
+
+            if (!found.storeName) {
+                appState.view = 'setup';
+            } else {
+                appState.view = 'main';
+            }
+            render();
+            showToast(`¡Bienvenido de nuevo, ${found.email}!`);
+        }
+
+        function handleRegisterStart(e) {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const plan = document.getElementById('reg-plan').value;
+
+            if (appState.users.some(u => u.email === email)) {
+                showToast('Este correo ya está registrado.', 'error');
+                return;
+            }
+
+            const token = 'TKN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            pendingRegData = { email, pass, plan, token, status: 'pending', role: 'user' };
+            authMode = 'payment';
+            render();
+        }
+
+        function submitPaymentProof(e) {
+            e.preventDefault();
+            const ref = document.getElementById('pay-ref').value;
+            if (!ref) {
+                showToast('Por favor ingresa la referencia de pago.', 'error');
+                return;
+            }
+
+            pendingRegData.paymentRef = ref;
+            appState.users.push(pendingRegData);
+            saveState();
+
+            authMode = 'pending';
+            render();
+            showToast('¡Comprobante enviado con éxito!');
+        }
+
+        function applyAuthCoupon() {
+            const codeInput = document.getElementById('auth-coupon-code').value.trim().toUpperCase();
+            const coupon = appState.coupons.find(c => c.code === codeInput);
+            if (!coupon) {
+                showToast('Código de canje inválido o inexistente.', 'error');
+                return;
+            }
+
+            if (pendingRegData) {
+                pendingRegData.status = 'approved';
+                appState.users.push(pendingRegData);
+                saveState();
+                appState.currentUser = pendingRegData;
+                appState.view = 'setup';
+                render();
+                showToast('¡Código canjeado con éxito! Cuenta aprobada instantáneamente.');
+            } else {
+                showToast('Por favor inicia el registro con correo y contraseña primero.', 'error');
+            }
+        }
+
+
+        // --- 2. SECRET ADMIN PANEL (`furax030@gmail.com`) ---
+        let adminTab = 'metrics'; // metrics, approvals, coupons
+
+        function renderAdminScreen() {
+            const pendingUsers = appState.users.filter(u => u.status === 'pending');
+            const approvedUsers = appState.users.filter(u => u.status === 'approved' && u.role !== 'admin');
+
+            return `
+            <div class="min-h-screen bg-slate-900 flex flex-col">
+                <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">👑</div>
+                        <div>
+                            <h1 class="font-bold text-white text-base">Panel Secreto de Superadministrador</h1>
+                            <p class="text-xs text-slate-400">Control total de Mi Tienda SaaS (${ADMIN_EMAIL})</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-xl text-xs font-semibold">Cerrar Sesión</button>
+                </header>
+
+                <div class="flex border-b border-slate-800 bg-slate-800/50 px-6">
+                    <button onclick="adminTab='metrics'; render();" class="px-6 py-3 text-xs font-semibold border-b-2 ${adminTab==='metrics'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-chart-line mr-2"></i>Métricas en Vivo</button>
+                    <button onclick="adminTab='approvals'; render();" class="px-6 py-3 text-xs font-semibold border-b-2 ${adminTab==='approvals'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-user-check mr-2"></i>Aprobaciones (${pendingUsers.length})</button>
+                    <button onclick="adminTab='coupons'; render();" class="px-6 py-3 text-xs font-semibold border-b-2 ${adminTab==='coupons'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-ticket mr-2"></i>Códigos de Canje</button>
+                </div>
+
+                <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+                    ${adminTab === 'metrics' ? `
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
+                                <span class="text-xs text-slate-400 uppercase font-semibold">Usuarios en Línea</span>
+                                <div class="text-3xl font-extrabold text-white mt-2">14 <span class="text-xs text-emerald-400 font-normal">● Activos</span></div>
+                            </div>
+                            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
+                                <span class="text-xs text-slate-400 uppercase font-semibold">Suscripciones Pagas</span>
+                                <div class="text-3xl font-extrabold text-emerald-400 mt-2">${approvedUsers.length}</div>
+                            </div>
+                            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
+                                <span class="text-xs text-slate-400 uppercase font-semibold">Aprobaciones Pendientes</span>
+                                <div class="text-3xl font-extrabold text-amber-400 mt-2">${pendingUsers.length}</div>
+                            </div>
+                            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
+                                <span class="text-xs text-slate-400 uppercase font-semibold">Ingresos Totales SaaS</span>
+                                <div class="text-3xl font-extrabold text-brand-400 mt-2">$${(approvedUsers.length * 2.99).toFixed(2)}</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                            <h2 class="text-sm font-bold text-white mb-4">Lista General de Clientes SaaS Activos</h2>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-300">
+                                    <thead class="bg-slate-900 uppercase text-slate-400">
+                                        <tr>
+                                            <th class="p-3">Correo</th>
+                                            <th class="p-3">Token Único</th>
+                                            <th class="p-3">Tienda</th>
+                                            <th class="p-3">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-700">
+                                        ${approvedUsers.map(u => `
+                                            <tr>
+                                                <td class="p-3 font-medium text-white">${u.email}</td>
+                                                <td class="p-3 font-mono text-amber-400">${u.token || 'N/A'}</td>
+                                                <td class="p-3">${u.storeName || 'Sin configurar'}</td>
+                                                <td class="p-3"><span class="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full text-[10px]">Activo</span></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ` : adminTab === 'approvals' ? `
+                        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                            <h2 class="text-sm font-bold text-white mb-4">Cola de Aprobación de Suscripciones</h2>
+                            ${pendingUsers.length === 0 ? '<p class="text-xs text-slate-400">No hay pagos pendientes de aprobación.</p>' : `
+                                <div class="space-y-4">
+                                    ${pendingUsers.map(u => `
+                                        <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl flex items-center justify-between">
+                                            <div>
+                                                <span class="text-white font-semibold block text-sm">${u.email}</span>
+                                                <span class="text-xs text-slate-400">Token: <strong class="text-amber-400">${u.token}</strong> | Ref Pago: ${u.paymentRef || 'N/A'} | Plan: ${u.plan}</span>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button onclick="approveUser('${u.email}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-semibold">Aprobar ✅</button>
+                                                <button onclick="rejectUser('${u.email}')" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-xs font-semibold">Rechazar ❌</button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `}
+                        </div>
+                    ` : adminTab === 'coupons' ? `
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                                <h2 class="text-sm font-bold text-white mb-4">Crear Código de Canje</h2>
+                                <form onsubmit="handleCreateCoupon(event)" class="space-y-4 text-xs">
+                                    <div>
+                                        <label class="block font-medium text-slate-300 mb-1">Código Único</label>
+                                        <input type="text" id="coupon-code" required placeholder="EJ. VERANO2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 uppercase font-mono text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium text-slate-300 mb-1">Tipo de Beneficio</label>
+                                        <select id="coupon-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                            <option value="months">Meses de Suscripción Gratis</option>
+                                            <option value="percent">Porcentaje de Descuento (%)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium text-slate-300 mb-1">Valor (ej. 1 mes o 20%)</label>
+                                        <input type="number" id="coupon-value" required value="1" min="1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium text-slate-300 mb-1">¿Es Multiuso?</label>
+                                        <select id="coupon-multi" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                            <option value="true">Sí (Multiuso hasta desactivar)</option>
+                                            <option value="false">No (Único uso)</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30">Generar Código</button>
+                                </form>
+                            </div>
+                            <div class="lg:col-span-2 bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                                <h2 class="text-sm font-bold text-white mb-4">Códigos Activos en el Sistema</h2>
+                                <div class="space-y-3">
+                                    ${appState.coupons.map((c, i) => `
+                                        <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl flex items-center justify-between text-xs">
+                                            <div>
+                                                <span class="font-mono font-bold text-amber-400 text-sm">${c.code}</span>
+                                                <span class="text-slate-400 block mt-1">Beneficio: ${c.value} ${c.type === 'months' ? 'Mes(es)' : '%'} | Tipo: ${c.multiUse ? 'Multiuso' : 'Único Uso'}</span>
+                                            </div>
+                                            <button onclick="deleteCoupon(${i})" class="bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white px-3 py-1.5 rounded-lg transition">Eliminar</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </main>
+            </div>`;
+        }
+
+        function approveUser(email) {
+            const user = appState.users.find(u => u.email === email);
+            if (user) {
+                user.status = 'approved';
+                user.token = 'TKN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                saveState();
+                render();
+                showToast(`Usuario ${email} aprobado correctamente.`);
+            }
+        }
+
+        function rejectUser(email) {
+            appState.users = appState.users.filter(u => u.email !== email);
+            saveState();
+            render();
+            showToast(`Usuario ${email} rechazado y eliminado.`);
+        }
+
+        function handleCreateCoupon(e) {
+            e.preventDefault();
+            const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+            const type = document.getElementById('coupon-type').value;
+            const value = parseFloat(document.getElementById('coupon-value').value);
+            const multiUse = document.getElementById('coupon-multi').value === 'true';
+
+            appState.coupons.push({ code, type, value, multiUse, expiry: '2026-12-31' });
+            saveState();
+            render();
+            showToast(`Código ${code} creado con éxito.`);
+        }
+
+        function deleteCoupon(index) {
+            appState.coupons.splice(index, 1);
+            saveState();
+            render();
+            showToast('Código eliminado.');
+        }
+
+
+        // --- 3. STORE SETUP WIZARD ---
+        function renderStoreSetupScreen() {
+            return `
+            <div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+                <div class="max-w-lg w-full bg-slate-800 border border-slate-700 rounded-3xl p-8 shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 bg-brand-600/20 text-brand-400 rounded-2xl flex items-center justify-center mx-auto text-xl mb-3">
+                            <i class="fa-solid fa-shop"></i>
+                        </div>
+                        <h1 class="text-xl font-bold text-white">Configura tu Tienda</h1>
+                        <p class="text-xs text-slate-400">Estás a un paso de comenzar a vender con tu ID Único: <strong class="text-amber-400">${appState.currentUser?.token}</strong></p>
+                    </div>
+
+                    <form onsubmit="handleStoreSetupSubmit(event)" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Nombre de la Tienda</label>
+                            <input type="text" id="setup-storename" required placeholder="Ej. Inversiones El Diamante" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Nombre Completo del Propietario</label>
+                            <input type="text" id="setup-fullname" required placeholder="Juan Pérez" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">País</label>
+                                <select id="setup-country" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-white">
+                                    <option value="VE">Venezuela</option>
+                                    <option value="CO">Colombia</option>
+                                    <option value="AR">Argentina</option>
+                                    <option value="MX">México</option>
+                                    <option value="CL">Chile</option>
+                                    <option value="PE">Perú</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">DNI / Cédula / Pasaporte</label>
+                                <input type="text" id="setup-dni" required placeholder="V-24589123" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-3 text-white">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-500 hover:to-violet-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30">
+                            Entrar al Panel de Control 🚀
+                        </button>
+                    </form>
+                </div>
+            </div>`;
+        }
+
+        function handleStoreSetupSubmit(e) {
+            e.preventDefault();
+            const storeName = document.getElementById('setup-storename').value.trim();
+            const fullName = document.getElementById('setup-fullname').value.trim();
+            const country = document.getElementById('setup-country').value;
+            const dni = document.getElementById('setup-dni').value.trim();
+
+            appState.currentUser.storeName = storeName;
+            appState.currentUser.fullName = fullName;
+            appState.currentUser.country = country;
+            appState.currentUser.dni = dni;
+
+            // Update in global users list
+            const idx = appState.users.findIndex(u => u.email === appState.currentUser.email);
+            if (idx !== -1) appState.users[idx] = appState.currentUser;
+
+            saveState();
+            appState.view = 'main';
+            render();
+            showToast('¡Tienda configurada con éxito!');
+        }
+
+
+        // --- 4. MAIN DASHBOARD & TABS ---
+        let mainTab = 'pos'; // pos, inventory, catalog, caja, metrics, export
+
+        function renderMainDashboard() {
+            const user = appState.currentUser;
+            const catalogSlug = `${user?.storeName?.toLowerCase().replace(/\s+/g, '-')}-${user?.token}`;
+
+            return `
+            <div class="min-h-screen bg-slate-900 flex flex-col">
+                <!-- Top Navigation Bar -->
+                <header class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-white text-sm">${user?.storeName || 'Mi Tienda'}</h1>
+                            <span class="text-[11px] text-amber-400 font-mono">Token: ${user?.token} | Propietario: ${user?.fullName}</span>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Currency Engine Header Indicator -->
+                    <div class="hidden md:flex items-center gap-4 text-xs bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700">
+                        <div>
+                            <span class="text-slate-400 text-[10px] block">TASA REF (USD / EUR)</span>
+                            <span class="font-bold text-white">$1.00</span>
+                        </div>
+                        <div class="border-l border-slate-700 pl-4">
+                            <span class="text-slate-400 text-[10px] block">TASA PRIMARIA (${appState.rates.primaryCurrency})</span>
+                            <span class="font-bold text-emerald-400">${appState.rates.primaryRate}</span>
+                        </div>
+                        <div class="border-l border-slate-700 pl-4">
+                            <span class="text-slate-400 text-[10px] block">TASA SECUNDARIA (${appState.rates.secondaryCurrency})</span>
+                            <span class="font-bold text-violet-400">${appState.rates.secondaryRate}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="appState.view='setup'; render();" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-2 rounded-xl text-xs font-semibold">Config</button>
+                        <button onclick="logout()" class="bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold">Cerrar Sesión</button>
+                    </div>
+                </header>
+
+                <!-- Sub-Navigation Tabs -->
+                <div class="flex border-b border-slate-800 bg-slate-800/50 px-6 overflow-x-auto">
+                    <button onclick="mainTab='pos'; render();" class="px-5 py-3 text-xs font-semibold border-b-2 whitespace-nowrap ${mainTab==='pos'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-cash-register mr-2"></i>POS Vender</button>
+                    <button onclick="mainTab='inventory'; render();" class="px-5 py-3 text-xs font-semibold border-b-2 whitespace-nowrap ${mainTab==='inventory'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-boxes-stacked mr-2"></i>Inventario</button>
+                    <button onclick="mainTab='catalog'; render();" class="px-5 py-3 text-xs font-semibold border-b-2 whitespace-nowrap ${mainTab==='catalog'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-globe mr-2"></i>Catálogo Virtual Web</button>
+                    <button onclick="mainTab='caja'; render();" class="px-5 py-3 text-xs font-semibold border-b-2 whitespace-nowrap ${mainTab==='caja'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-wallet mr-2"></i>Caja y Gastos</button>
+                    <button onclick="mainTab='metrics'; render();" class="px-5 py-3 text-xs font-semibold border-b-2 whitespace-nowrap ${mainTab==='metrics'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-chart-pie mr-2"></i>Métricas</button>
+                    <button onclick="mainTab='export'; render();" class="px-5 py-3 text-xs font-semibold border-b-2 whitespace-nowrap ${mainTab==='export'?'border-brand-500 text-brand-400':'border-transparent text-slate-400 hover:text-white'}"><i class="fa-solid fa-file-excel mr-2"></i>Excel / JSON</button>
+                </div>
+
+                <!-- Main Dynamic Content Area -->
+                <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+                    ${mainTab === 'pos' ? renderPOSTab() :
+                      mainTab === 'inventory' ? renderInventoryTab() :
+                      mainTab === 'catalog' ? renderCatalogTab() :
+                      mainTab === 'caja' ? renderCajaTab() :
+                      mainTab === 'metrics' ? renderMetricsTab() :
+                      mainTab === 'export' ? renderExportTab() : ''}
+                </main>
+            </div>`;
+        }
+
+        function logout() {
+            appState.currentUser = null;
+            appState.view = 'auth';
+            saveState();
+            render();
+            showToast('Sesión cerrada correctamente.');
+        }
+
+
+        // --- 5. POS & SALES MODULE (VENDER) ---
+        function renderPOSTab() {
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId) || appState.carts[0];
+            const cartTotalUSD = activeCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            return `
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left 2 Cols: Products & Search -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                        <div class="relative w-full sm:w-80">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-search"></i></span>
+                            <input type="text" id="pos-search" oninput="filterPOSProducts(this.value)" placeholder="Buscar producto o escanear código..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                            <span class="text-xs text-slate-400 font-medium">Categorías:</span>
+                            <button onclick="filterPOSCategory('ALL')" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg text-slate-200">Todas</button>
+                            ${appState.categories.map(cat => `
+                                <button onclick="filterPOSCategory('${cat}')" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg text-slate-200">${cat}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Product Grid -->
+                    <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto pr-1">
+                        ${appState.products.map(p => `
+                            <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-3 flex flex-col justify-between shadow-lg hover:border-brand-500 transition group">
+                                <div>
+                                    <img src="${p.image}" alt="${p.name}" class="w-full h-28 object-cover rounded-xl mb-3 bg-slate-900 group-hover:scale-105 transition duration-300">
+                                    <span class="text-[10px] text-brand-400 font-semibold uppercase">${p.category}</span>
+                                    <h3 class="font-bold text-white text-xs line-clamp-2 mt-0.5">${p.name}</h3>
+                                    <span class="text-[10px] text-slate-400">Stock: ${p.stock} ${p.unit}</span>
+                                </div>
+                                <div class="mt-3 pt-3 border-t border-slate-700/60 flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-extrabold text-emerald-400">$${p.price.toFixed(2)}</span>
+                                        <span class="text-[9px] text-slate-400 block">($${(p.price * appState.rates.primaryRate).toFixed(1)} ${appState.rates.primaryCurrency})</span>
+                                    </div>
+                                    <button onclick="addToCart('${p.id}')" class="bg-brand-600 hover:bg-brand-500 text-white w-9 h-9 rounded-xl flex items-center justify-center shadow-md shadow-brand-600/30 active:scale-95 transition">
+                                        <i class="fa-solid fa-cart-plus text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Right Col: Multiple Carts & Checkout Panel -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 flex flex-col h-[700px]">
+                    <!-- Carts Navigation Bar (Up to 5) -->
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-3 overflow-x-auto gap-2">
+                        <div class="flex items-center gap-1.5">
+                            ${appState.carts.map(c => `
+                                <button onclick="switchCart('${c.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${c.id === appState.activeCartId ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'bg-slate-900 text-slate-400 hover:text-white'}">
+                                    ${c.name} (${c.items.length})
+                                </button>
+                            `).join('')}
+                        </div>
+                        ${appState.carts.length < 5 ? `
+                            <button onclick="addNewCart()" class="bg-slate-700 hover:bg-slate-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold" title="Añadir otro carro"><i class="fa-solid fa-plus"></i></button>
+                        ` : ''}
+                    </div>
+
+                    <!-- Cart Items List -->
+                    <div class="flex-1 overflow-y-auto space-y-2 pr-1">
+                        ${activeCart.items.length === 0 ? `
+                            <div class="h-full flex flex-col items-center justify-center text-center text-slate-500">
+                                <i class="fa-solid fa-cart-shopping text-3xl mb-2 opacity-30"></i>
+                                <p class="text-xs">El carrito está vacío.<br>Haz clic en `+🛒` para agregar productos.</p>
+                            </div>
+                        ` : activeCart.items.map((item, idx) => `
+                            <div class="bg-slate-900 border border-slate-700/80 p-2.5 rounded-xl flex items-center justify-between text-xs">
+                                <div class="flex-1 pr-2">
+                                    <h4 class="font-semibold text-white truncate">${item.name}</h4>
+                                    <span class="text-[10px] text-emerald-400">$${item.price.toFixed(2)} c/u</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="updateCartItemQty('${item.id}', -1)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-white rounded-lg flex items-center justify-center font-bold">-</button>
+                                    <span class="font-bold text-white w-5 text-center">${item.qty}</span>
+                                    <button onclick="updateCartItemQty('${item.id}', 1)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-white rounded-lg flex items-center justify-center font-bold">+</button>
+                                    <button onclick="removeCartItem('${item.id}')" class="text-rose-400 hover:text-rose-300 ml-1"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Cart Summary & Checkout Actions -->
+                    <div class="border-t border-slate-700 pt-3 mt-3 space-y-2 text-xs">
+                        <div class="flex justify-between text-slate-400">
+                            <span>Subtotal:</span>
+                            <span class="text-white font-semibold">$${cartTotalUSD.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400">
+                            <span>Impuesto (IVA 16% incl.):</span>
+                            <span class="text-white font-semibold">$${(cartTotalUSD * 0.16).toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-base font-extrabold text-white pt-2 border-t border-slate-700">
+                            <span>Total a Pagar:</span>
+                            <span class="text-emerald-400">$${cartTotalUSD.toFixed(2)}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 text-right">
+                            Equivalente: ~${(cartTotalUSD * appState.rates.primaryRate).toFixed(2)} ${appState.rates.primaryCurrency}
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-2">
+                            <button onclick="openCheckoutModal()" ${activeCart.items.length === 0 ? 'disabled' : ''} class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-emerald-600/30 transition">
+                                Cobrar 💳
+                            </button>
+                            <button onclick="openFiadoModal()" ${activeCart.items.length === 0 ? 'disabled' : ''} class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-amber-600/30 transition">
+                                Fiar (Crédito) 📝
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function addToCart(productId) {
+            const product = appState.products.find(p => p.id === productId);
+            if (!product || product.stock <= 0) {
+                showToast('Producto sin stock disponible.', 'error');
+                return;
+            }
+
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId);
+            const existing = activeCart.items.find(i => i.id === productId);
+            if (existing) {
+                if (existing.qty >= product.stock) {
+                    showToast('No hay más stock disponible para este producto.', 'error');
+                    return;
+                }
+                existing.qty++;
+            } else {
+                activeCart.items.push({ ...product, qty: 1 });
+            }
+            saveState();
+            render();
+            showToast(`Agregado a ${activeCart.name}`);
+        }
+
+        function updateCartItemQty(productId, delta) {
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId);
+            const item = activeCart.items.find(i => i.id === productId);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    activeCart.items = activeCart.items.filter(i => i.id !== productId);
+                }
+                saveState();
+                render();
+            }
+        }
+
+        function removeCartItem(productId) {
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId);
+            activeCart.items = activeCart.items.filter(i => i.id !== productId);
+            saveState();
+            render();
+        }
+
+        function addNewCart() {
+            if (appState.carts.length >= 5) {
+                showToast('Máximo 5 carritos simultáneos permitidos.', 'error');
+                return;
+            }
+            const names = ['Carrito de Pedro', 'María', 'Cliente Express', 'Mayorista', 'VIP'];
+            const newName = names[appState.carts.length] || `Carrito ${appState.carts.length + 1}`;
+            const newId = 'c' + (appState.carts.length + 1);
+            appState.carts.push({ id: newId, name: newName, items: [] });
+            appState.activeCartId = newId;
+            saveState();
+            render();
+            showToast(`Nuevo carrito abierto: ${newName}`);
+        }
+
+        function switchCart(cartId) {
+            appState.activeCartId = cartId;
+            saveState();
+            render();
+        }
+
+        function filterPOSProducts(query) {
+            // Simple filtering logic bound to UI grid re-render
+            const q = query.toLowerCase();
+            const grid = document.getElementById('pos-product-grid');
+            if (!grid) return;
+            const filtered = appState.products.filter(p => p.name.toLowerCase().includes(q) || p.barcode.includes(q));
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-3 flex flex-col justify-between shadow-lg">
+                    <div>
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-28 object-cover rounded-xl mb-3 bg-slate-900">
+                        <span class="text-[10px] text-brand-400 font-semibold uppercase">${p.category}</span>
+                        <h3 class="font-bold text-white text-xs line-clamp-2 mt-0.5">${p.name}</h3>
+                        <span class="text-[10px] text-slate-400">Stock: ${p.stock} ${p.unit}</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-700/60 flex items-center justify-between">
+                        <span class="text-sm font-extrabold text-emerald-400">$${p.price.toFixed(2)}</span>
+                        <button onclick="addToCart('${p.id}')" class="bg-brand-600 hover:bg-brand-500 text-white w-9 h-9 rounded-xl flex items-center justify-center"><i class="fa-solid fa-cart-plus text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterPOSCategory(cat) {
+            const grid = document.getElementById('pos-product-grid');
+            if (!grid) return;
+            const filtered = cat === 'ALL' ? appState.products : appState.products.filter(p => p.category === cat);
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-3 flex flex-col justify-between shadow-lg">
+                    <div>
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-28 object-cover rounded-xl mb-3 bg-slate-900">
+                        <span class="text-[10px] text-brand-400 font-semibold uppercase">${p.category}</span>
+                        <h3 class="font-bold text-white text-xs line-clamp-2 mt-0.5">${p.name}</h3>
+                        <span class="text-[10px] text-slate-400">Stock: ${p.stock} ${p.unit}</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-700/60 flex items-center justify-between">
+                        <span class="text-sm font-extrabold text-emerald-400">$${p.price.toFixed(2)}</span>
+                        <button onclick="addToCart('${p.id}')" class="bg-brand-600 hover:bg-brand-500 text-white w-9 h-9 rounded-xl flex items-center justify-center"><i class="fa-solid fa-cart-plus text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Checkout Modal & Thermal Receipt Preview
+        function openCheckoutModal() {
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId);
+            const total = activeCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const container = document.getElementById('modal-container');
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+            container.innerHTML = `
+                <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 max-w-md w-full space-y-4 text-xs">
+                    <h3 class="text-base font-bold text-white mb-2"><i class="fa-solid fa-cash-register mr-2 text-emerald-400"></i>Finalizar Venta (${activeCart.name})</h3>
+                    <div class="bg-slate-900 p-3 rounded-xl flex justify-between font-bold text-white text-sm">
+                        <span>Total a Pagar:</span>
+                        <span class="text-emerald-400">$${total.toFixed(2)} USD</span>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">Método de Pago</label>
+                        <select id="checkout-method" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            <option value="cash">Efectivo USD</option>
+                            <option value="primary">Efectivo ${appState.rates.primaryCurrency}</option>
+                            <option value="binance">Binance Pay / USDT</option>
+                            <option value="card">Tarjeta Débito/Crédito</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">Monto Recibido</label>
+                        <input type="number" id="checkout-received" placeholder="0.00" oninput="calcChange(${total})" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                    </div>
+                    <div id="change-display" class="bg-slate-900 p-3 rounded-xl text-slate-300">
+                        Vuelto / Cambio: <span class="font-bold text-white">$0.00</span>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="completeSale('paid')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-emerald-600/30">Confirmar y Cobrar ✅</button>
+                        <button onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-3 rounded-xl font-semibold">Cancelar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calcChange(total) {
+            const received = parseFloat(document.getElementById('checkout-received').value) || 0;
+            const change = received - total;
+            const display = document.getElementById('change-display');
+            display.innerHTML = `Vuelto / Cambio: <span class="font-bold ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}">$${change >= 0 ? change.toFixed(2) : '0.00'}</span>`;
+        }
+
+        function completeSale(status) {
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId);
+            const total = activeCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // Deduct stock
+            activeCart.items.forEach(cartItem => {
+                const prod = appState.products.find(p => p.id === cartItem.id);
+                if (prod) prod.stock -= cartItem.qty;
+            });
+
+            // Record sale
+            appState.salesHistory.push({
+                id: 'SALE-' + Date.now(),
+                cartName: activeCart.name,
+                items: [...activeCart.items],
+                total,
+                date: new Date().toLocaleString()
+            });
+
+            // Clear cart
+            activeCart.items = [];
+            saveState();
+            closeModal();
+            render();
+            showToast('¡Venta completada con éxito! Stock actualizado.');
+        }
+
+        function openFiadoModal() {
+            const activeCart = appState.carts.find(c => c.id === appState.activeCartId);
+            const total = activeCart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const container = document.getElementById('modal-container');
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+            container.innerHTML = `
+                <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 max-w-md w-full space-y-4 text-xs">
+                    <h3 class="text-base font-bold text-white mb-2"><i class="fa-solid fa-file-invoice-dollar mr-2 text-amber-400"></i>Registrar Venta a Crédito (Fiado)</h3>
+                    <div class="bg-slate-900 p-3 rounded-xl flex justify-between font-bold text-white text-sm">
+                        <span>Deuda Total:</span>
+                        <span class="text-amber-400">$${total.toFixed(2)} USD</span>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">Nombre del Cliente (Deudor)</label>
+                        <input type="text" id="fiado-client" required placeholder="Ej. Carlos Mendoza" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-300 mb-1">Abono Inicial (Opcional)</label>
+                        <input type="number" id="fiado-abono" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="completeFiadoSale()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-amber-600/30">Guardar Crédito 📝</button>
+                        <button onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-3 rounded-xl font-semibold">Cancelar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function completeFiadoSale() {
+            const clientName = document.getElementById('fiado-client').value.trim();
+            if (!clientName) {
+                showToast('Por favor ingresa el nombre del cliente.', 'error');
+                return;
+            }
+            completeSale('fiado');
+            showToast(`Crédito registrado para ${clientName}.`);
+        }
+
+        function closeModal() {
+            const container = document.getElementById('modal-container');
+            container.classList.add('hidden');
+            container.classList.remove('flex');
+        }
+
+
+        // --- 6. INVENTORY MANAGEMENT ---
+        function renderInventoryTab() {
+            return `
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Inventario de Productos</h2>
+                        <p class="text-xs text-slate-400">Gestiona stock, costos, márgenes de ganancia y alertas.</p>
+                    </div>
+                    <button onclick="openAddProductModal()" class="bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-500 hover:to-violet-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-brand-600/30">
+                        <i class="fa-solid fa-plus mr-2"></i>Agregar Producto
+                    </button>
+                </div>
+
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 uppercase text-slate-400">
+                                <tr>
+                                    <th class="p-3">Imagen</th>
+                                    <th class="p-3">Producto / Marca</th>
+                                    <th class="p-3">Categoría</th>
+                                    <th class="p-3">Costo</th>
+                                    <th class="p-3">Precio Venta</th>
+                                    <th class="p-3">Stock</th>
+                                    <th class="p-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700">
+                                ${appState.products.map(p => `
+                                    <tr>
+                                        <td class="p-3"><img src="${p.image}" class="w-10 h-10 rounded-xl object-cover bg-slate-900"></td>
+                                        <td class="p-3">
+                                            <span class="font-bold text-white block">${p.name}</span>
+                                            <span class="text-[10px] text-slate-400">${p.brand} | BC: ${p.barcode}</span>
+                                        </td>
+                                        <td class="p-3"><span class="bg-brand-500/20 text-brand-400 px-2.5 py-1 rounded-full text-[10px]">${p.category}</span></td>
+                                        <td class="p-3">$${p.cost.toFixed(2)}</td>
+                                        <td class="p-3 font-bold text-emerald-400">$${p.price.toFixed(2)}</td>
+                                        <td class="p-3">
+                                            <span class="${p.stock <= p.minStock ? 'bg-rose-500/20 text-rose-400 font-bold' : 'text-white'} px-2 py-1 rounded-lg">
+                                                ${p.stock} ${p.unit} ${p.stock <= p.minStock ? '⚠️' : ''}
+                                            </span>
+                                        </td>
+                                        <td class="p-3">
+                                            <button onclick="deleteProduct('${p.id}')" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg bg-rose-500/10"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function openAddProductModal() {
+            const container = document.getElementById('modal-container');
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+            container.innerHTML = `
+                <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 max-w-lg w-full space-y-4 text-xs max-h-[90vh] overflow-y-auto">
+                    <h3 class="text-base font-bold text-white mb-2"><i class="fa-solid fa-box-open mr-2 text-brand-400"></i>Agregar Nuevo Producto</h3>
+                    <form onsubmit="handleAddProductSubmit(event)" class="space-y-3">
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Nombre del Producto</label>
+                            <input type="text" id="prod-name" required placeholder="Ej. Harina de Maíz" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Marca</label>
+                                <input type="text" id="prod-brand" placeholder="Ej. HarinaMAX" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Categoría</label>
+                                <select id="prod-cat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                    ${appState.categories.map(c => `<option value="${c}">${c}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Se Vende Por</label>
+                                <select id="prod-unit" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                    <option value="unidad">Unidad</option>
+                                    <option value="peso">Peso (Kg/g)</option>
+                                    <option value="litros">Litros</option>
+                                    <option value="metros">Metros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Costo ($)</label>
+                                <input type="number" step="0.01" id="prod-cost" required placeholder="0.00" oninput="calcPricePreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Margen (%)</label>
+                                <input type="number" id="prod-margin" required value="30" oninput="calcPricePreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Precio Venta Final ($)</label>
+                                <input type="number" step="0.01" id="prod-price" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-emerald-400 font-bold">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Stock Inicial</label>
+                                <input type="number" id="prod-stock" required value="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Alerta Mínima</label>
+                                <input type="number" id="prod-min" required value="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Código de Barras</label>
+                            <input type="text" id="prod-barcode" placeholder="759..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">URL de Imagen</label>
+                            <input type="text" id="prod-image" placeholder="https://placehold.co/300x300..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30">Guardar Producto ✅</button>
+                            <button type="button" onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-3 rounded-xl font-semibold">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function calcPricePreview() {
+            const cost = parseFloat(document.getElementById('prod-cost').value) || 0;
+            const margin = parseFloat(document.getElementById('prod-margin').value) || 0;
+            const priceInput = document.getElementById('prod-price');
+            if (priceInput) {
+                const calculated = cost * (1 + (margin / 100));
+                priceInput.value = calculated.toFixed(2);
+            }
+        }
+
+        function handleAddProductSubmit(e) {
+            e.preventDefault();
+            const newProd = {
+                id: 'p' + Date.now(),
+                name: document.getElementById('prod-name').value.trim(),
+                brand: document.getElementById('prod-brand').value.trim() || 'Genérico',
+                category: document.getElementById('prod-cat').value,
+                unit: document.getElementById('prod-unit').value,
+                cost: parseFloat(document.getElementById('prod-cost').value),
+                margin: parseFloat(document.getElementById('prod-margin').value),
+                price: parseFloat(document.getElementById('prod-price').value),
+                stock: parseInt(document.getElementById('prod-stock').value),
+                minStock: parseInt(document.getElementById('prod-min').value),
+                barcode: document.getElementById('prod-barcode').value.trim() || '0000000',
+                image: document.getElementById('prod-image').value.trim() || 'https://placehold.co/300x300/1e293b/6366f1?text=Producto',
+                showCatalog: true
+            };
+
+            appState.products.push(newProd);
+            saveState();
+            closeModal();
+            render();
+            showToast('Producto agregado con éxito.');
+        }
+
+        function deleteProduct(id) {
+            appState.products = appState.products.filter(p => p.id !== id);
+            saveState();
+            render();
+            showToast('Producto eliminado.');
+        }
+
+
+        // --- 7. VIRTUAL CATALOG WEB PREVIEW ---
+        function renderCatalogTab() {
+            const user = appState.currentUser;
+            const slug = `${user?.storeName?.toLowerCase().replace(/\s+/g, '-')}-${user?.token}`;
+            const catalogUrl = `https://mintienda.site/store/${slug}`;
+
+            return `
+            <div class="space-y-6 max-w-4xl mx-auto">
+                <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-base font-bold text-white mb-1">Enlace de tu Catálogo Virtual</h2>
+                        <p class="text-xs text-slate-400">Comparte este link por WhatsApp para que tus clientes vean tus productos y te hagan pedidos directamente.</p>
+                        <div class="bg-slate-900 border border-slate-700 px-4 py-2.5 rounded-xl font-mono text-xs text-brand-400 mt-3 inline-block">
+                            ${catalogUrl}
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyToClipboard('${catalogUrl}', 'Link del Catálogo')" class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-brand-600/30"><i class="fa-solid fa-copy mr-2"></i>Copiar Link</button>
+                        <button onclick="appState.view='public_catalog'; render();" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold">Ver Vista Cliente 👁️</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                    <h3 class="text-sm font-bold text-white mb-4">Productos en el Catálogo Público</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        ${appState.products.map(p => `
+                            <div class="bg-slate-900 border border-slate-700 p-3 rounded-xl">
+                                <img src="${p.image}" class="w-full h-24 object-cover rounded-lg mb-2">
+                                <h4 class="font-bold text-white text-xs truncate">${p.name}</h4>
+                                <span class="text-xs font-extrabold text-emerald-400">$${p.price.toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Public Catalog View (Simulated Customer View)
+        function renderPublicCatalogScreen() {
+            const user = appState.currentUser;
+            return `
+            <div class="min-h-screen bg-slate-900 flex flex-col">
+                <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+                    <div>
+                        <h1 class="font-extrabold text-white text-lg">${user?.storeName || 'Tienda Virtual'}</h1>
+                        <p class="text-xs text-brand-400">Catálogo Oficial verificado (Token: ${user?.token})</p>
+                    </div>
+                    <button onclick="appState.view='main'; mainTab='catalog'; render();" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">← Volver al Panel</button>
+                </header>
+
+                <main class="flex-1 p-6 max-w-5xl mx-auto w-full space-y-6">
+                    <div class="bg-gradient-to-r from-brand-600 to-violet-600 p-6 rounded-3xl text-white shadow-xl flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-extrabold">¡Bienvenido a nuestro mostrador virtual!</h2>
+                            <p class="text-xs opacity-90 mt-1">Selecciona tus productos y envíanos el pedido directamente por WhatsApp.</p>
+                        </div>
+                        <i class="fa-brands fa-whatsapp text-4xl opacity-80"></i>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        ${appState.products.map(p => `
+                            <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl flex flex-col justify-between shadow-lg">
+                                <div>
+                                    <img src="${p.image}" class="w-full h-32 object-cover rounded-xl mb-3 bg-slate-900">
+                                    <h3 class="font-bold text-white text-xs line-clamp-2">${p.name}</h3>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-700 flex items-center justify-between">
+                                    <span class="text-sm font-extrabold text-emerald-400">$${p.price.toFixed(2)}</span>
+                                    <button onclick="showToast('Pedido simulado enviado por WhatsApp 📱')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-semibold">Pedir 🛒</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </main>
+            </div>`;
+        }
+
+
+        // --- 8. ADDITIONAL MODULES (Caja & Expenses, Metrics, Export) ---
+        function renderCajaTab() {
+            return `
+            <div class="space-y-6 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Estado de Caja</span>
+                        <div class="text-2xl font-extrabold text-emerald-400 mt-2">ABIERTA 🟢</div>
+                        <span class="text-xs text-slate-400 block mt-1">Desde: ${appState.caja.openedAt}</span>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Efectivo en Caja</span>
+                        <div class="text-2xl font-extrabold text-white mt-2">$${appState.caja.cashSalesUSD.toFixed(2)}</div>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Ventas Totales del Día</span>
+                        <div class="text-2xl font-extrabold text-brand-400 mt-2">$${(appState.caja.cashSalesUSD + appState.caja.cardSalesUSD).toFixed(2)}</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                    <h3 class="text-sm font-bold text-white mb-4">Registro de Gastos Operativos</h3>
+                    <div class="space-y-3">
+                        ${appState.expenses.map(e => `
+                            <div class="bg-slate-900 border border-slate-700 p-3 rounded-xl flex items-center justify-between text-xs">
+                                <div>
+                                    <span class="font-bold text-white block">${e.description}</span>
+                                    <span class="text-slate-400">Fecha: ${e.date}</span>
+                                </div>
+                                <span class="font-extrabold text-rose-400">-$${e.amount.toFixed(2)} USD</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderMetricsTab() {
+            const totalRevenue = appState.salesHistory.reduce((s, sale) => s + sale.total, 0);
+            return `
+            <div class="space-y-6 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                        <h3 class="text-sm font-bold text-white mb-2">Ventas Totales Registradas</h3>
+                        <div class="text-3xl font-extrabold text-emerald-400">$${totalRevenue.toFixed(2)}</div>
+                        <p class="text-xs text-slate-400 mt-1">${appState.salesHistory.length} transacciones completadas hoy.</p>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+                        <h3 class="text-sm font-bold text-white mb-2">Valor Total del Inventario</h3>
+                        <div class="text-3xl font-extrabold text-brand-400">$${appState.products.reduce((s, p) => s + (p.cost * p.stock), 0).toFixed(2)}</div>
+                        <p class="text-xs text-slate-400 mt-1">Inversión actual en mercancía.</p>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderExportTab() {
+            return `
+            <div class="space-y-6 max-w-4xl mx-auto">
+                <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-1">Exportar Inventario a Excel (CSV)</h3>
+                        <p class="text-xs text-slate-400">Descarga tu base de datos de productos en formato compatible con Excel.</p>
+                    </div>
+                    <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/30"><i class="fa-solid fa-file-excel mr-2"></i>Descargar CSV</button>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-1">Exportar Base de Datos (JSON)</h3>
+                        <p class="text-xs text-slate-400">Respaldo completo de inventario, ventas y configuración en formato JSON.</p>
+                    </div>
+                    <button onclick="exportJSON()" class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-3 rounded-xl text-xs font-semibold shadow-lg shadow-brand-600/30"><i class="fa-solid fa-code mr-2"></i>Descargar JSON</button>
+                </div>
+            </div>`;
+        }
+
+        function exportCSV() {
+            let csv = 'ID,Nombre,Marca,Categoría,Costo,Precio,Stock\n';
+            appState.products.forEach(p => {
+                csv += `"${p.id}","${p.name}","${p.brand}","${p.category}",${p.cost},${p.price},${p.stock}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'inventario_mi_tienda.csv';
+            link.click();
+            showToast('Archivo CSV descargado con éxito.');
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "respaldo_mi_tienda.json");
+            dlAnchor.click();
+            showToast('Respaldo JSON descargado con éxito.');
+        }
+
+        // Initialize App on Load
+        window.onload = function() {
+            render();
+        };
+    </script>
+</body>
+</html>

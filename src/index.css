@@ -1,0 +1,1218 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-900: #312e81;
+}
+
+html {
+  font-size: var(--app-root-font-size, 16px);
+}
+
+html,
+body,
+#root {
+  font-family: var(--app-font-family, 'Inter', sans-serif);
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+/* Smooth Theme Transition for Light & Dark Modes */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 350ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Keep interactive transform/opacity transitions snappy */
+.theme-transition button,
+.theme-transition .theme-toggle-thumb,
+.theme-transition .theme-toggle-icon {
+  transition-property: background-color, border-color, color, transform, opacity, box-shadow;
+  transition-duration: 400ms;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Prevent form controls and flex/grid children from overflowing mobile screens */
+input,
+select,
+textarea {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+button,
+[role="button"],
+[role="switch"],
+select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#modal-container > * {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Light Theme Overrides (.theme-light) */
+.theme-light {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.theme-light ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+.theme-light ::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+}
+
+/* Surface & Background Overrides */
+.theme-light .bg-slate-900 {
+  background-color: #f1f5f9 !important;
+}
+
+.theme-light .bg-slate-900\/98,
+.theme-light .bg-slate-900\/95,
+.theme-light .bg-slate-900\/90,
+.theme-light .bg-slate-900\/85,
+.theme-light .bg-slate-900\/80,
+.theme-light .bg-slate-900\/75,
+.theme-light .bg-slate-900\/70,
+.theme-light .bg-slate-900\/60,
+.theme-light .bg-slate-900\/50,
+.theme-light .bg-slate-900\/40 {
+  background-color: #f8fafc !important;
+}
+
+.theme-light .bg-slate-950,
+.theme-light .bg-slate-950\/95,
+.theme-light .bg-slate-950\/90,
+.theme-light .bg-slate-950\/85,
+.theme-light .bg-slate-950\/80,
+.theme-light .bg-slate-950\/70,
+.theme-light .bg-slate-950\/60,
+.theme-light .bg-slate-950\/50,
+.theme-light .bg-slate-950\/40 {
+  background-color: #ffffff !important;
+}
+
+.theme-light .bg-slate-800,
+.theme-light .bg-slate-800\/95,
+.theme-light .bg-slate-800\/90,
+.theme-light .bg-slate-800\/85,
+.theme-light .bg-slate-800\/80,
+.theme-light .bg-slate-800\/70,
+.theme-light .bg-slate-800\/60,
+.theme-light .bg-slate-800\/50,
+.theme-light .bg-slate-800\/40 {
+  background-color: #ffffff !important;
+}
+
+.theme-light .bg-slate-700,
+.theme-light .bg-slate-700\/90,
+.theme-light .bg-slate-700\/80,
+.theme-light .bg-slate-700\/70,
+.theme-light .bg-slate-700\/60,
+.theme-light .bg-slate-700\/50,
+.theme-light .bg-slate-700\/40,
+.theme-light .bg-slate-600 {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.theme-light button.bg-slate-700:hover,
+.theme-light button.bg-slate-800:hover,
+.theme-light button.bg-slate-900:hover {
+  background-color: #cbd5e1 !important;
+}
+
+/* Dark 950 tinted containers -> soft light tinted surfaces */
+.theme-light .bg-rose-950,
+.theme-light .bg-rose-950\/90,
+.theme-light .bg-rose-950\/80,
+.theme-light .bg-rose-950\/60,
+.theme-light .bg-rose-950\/50,
+.theme-light .bg-rose-950\/40 {
+  background-color: #ffe4e6 !important;
+}
+
+.theme-light .bg-indigo-950,
+.theme-light .bg-indigo-950\/80,
+.theme-light .bg-indigo-950\/60,
+.theme-light .bg-indigo-950\/50,
+.theme-light .bg-indigo-950\/40 {
+  background-color: #e0e7ff !important;
+}
+
+.theme-light .bg-emerald-950,
+.theme-light .bg-emerald-950\/80,
+.theme-light .bg-emerald-950\/60,
+.theme-light .bg-emerald-950\/50,
+.theme-light .bg-emerald-950\/40 {
+  background-color: #d1fae5 !important;
+}
+
+.theme-light .bg-amber-950,
+.theme-light .bg-amber-950\/80,
+.theme-light .bg-amber-950\/60,
+.theme-light .bg-amber-950\/50,
+.theme-light .bg-amber-950\/40 {
+  background-color: #fef3c7 !important;
+}
+
+/* Dark slate gradient cards -> clean light surface */
+.theme-light .from-slate-800,
+.theme-light .from-slate-900,
+.theme-light .from-slate-950 {
+  --tw-gradient-from: #ffffff !important;
+  --tw-gradient-via: #f8fafc !important;
+  --tw-gradient-to: #eef2ff !important;
+  background-color: #ffffff !important;
+}
+
+/* Translucent tinted badges & secondary buttons -> visible soft backgrounds in Light Mode */
+.theme-light .bg-brand-500\/10,
+.theme-light .bg-brand-500\/15,
+.theme-light .bg-brand-500\/20,
+.theme-light .bg-brand-600\/20 {
+  background-color: rgba(79, 70, 229, 0.14) !important;
+}
+
+.theme-light .bg-indigo-500\/10,
+.theme-light .bg-indigo-500\/15,
+.theme-light .bg-indigo-500\/20,
+.theme-light .bg-indigo-600\/20 {
+  background-color: rgba(67, 56, 202, 0.14) !important;
+}
+
+.theme-light .bg-emerald-500\/10,
+.theme-light .bg-emerald-500\/15,
+.theme-light .bg-emerald-500\/20,
+.theme-light .bg-emerald-600\/20,
+.theme-light .bg-emerald-600\/25 {
+  background-color: rgba(5, 150, 105, 0.15) !important;
+}
+
+.theme-light .bg-amber-500\/10,
+.theme-light .bg-amber-500\/15,
+.theme-light .bg-amber-500\/20,
+.theme-light .bg-amber-500\/25 {
+  background-color: rgba(217, 119, 6, 0.16) !important;
+}
+
+.theme-light .bg-rose-500\/10,
+.theme-light .bg-rose-500\/15,
+.theme-light .bg-rose-500\/20,
+.theme-light .bg-rose-600\/20 {
+  background-color: rgba(225, 29, 72, 0.14) !important;
+}
+
+.theme-light .bg-violet-500\/10,
+.theme-light .bg-violet-500\/15,
+.theme-light .bg-violet-500\/20 {
+  background-color: rgba(124, 58, 237, 0.14) !important;
+}
+
+/* Borders with stronger contrast in Light Mode */
+.theme-light .border-slate-700,
+.theme-light .border-slate-700\/90,
+.theme-light .border-slate-700\/80,
+.theme-light .border-slate-700\/70,
+.theme-light .border-slate-700\/60,
+.theme-light .border-slate-800,
+.theme-light .border-slate-800\/80,
+.theme-light .border-slate-600 {
+  border-color: #cbd5e1 !important;
+}
+
+/* Form inputs & selects in Light Mode */
+.theme-light input:not([type="checkbox"]):not([type="radio"]),
+.theme-light select,
+.theme-light textarea {
+  color: #0f172a !important;
+}
+
+.theme-light input::placeholder,
+.theme-light textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+/* Primary & Secondary Slate Text Contrast */
+.theme-light .text-white,
+.theme-light .text-slate-50,
+.theme-light .text-slate-100 {
+  color: #0f172a !important;
+}
+
+.theme-light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+.theme-light .text-slate-300 {
+  color: #334155 !important;
+}
+
+.theme-light .text-slate-400,
+.theme-light .text-slate-500 {
+  color: #475569 !important;
+}
+
+/* Subtle weight/brand & muted opacity labels -> readable slate in Light Mode */
+.theme-light .text-slate-400\/60,
+.theme-light .text-slate-400\/70,
+.theme-light .text-slate-400\/80,
+.theme-light .text-slate-500\/60,
+.theme-light .text-slate-500\/70,
+.theme-light .text-slate-500\/80 {
+  color: #64748b !important;
+}
+
+/* High-Contrast Accent Text Colors on Light Surfaces */
+.theme-light .text-emerald-400,
+.theme-light .text-emerald-300,
+.theme-light .text-emerald-300\/90,
+.theme-light .text-emerald-200,
+.theme-light .text-emerald-100 {
+  color: #047857 !important;
+}
+
+.theme-light .text-teal-400,
+.theme-light .text-teal-300,
+.theme-light .text-teal-200 {
+  color: #0f766e !important;
+}
+
+.theme-light .text-violet-400,
+.theme-light .text-violet-400\/80,
+.theme-light .text-violet-300,
+.theme-light .text-violet-200,
+.theme-light .text-violet-100,
+.theme-light .text-purple-400,
+.theme-light .text-purple-300,
+.theme-light .text-purple-200 {
+  color: #6d28d9 !important;
+}
+
+.theme-light .text-amber-400,
+.theme-light .text-amber-400\/95,
+.theme-light .text-amber-300,
+.theme-light .text-amber-200,
+.theme-light .text-amber-100,
+.theme-light .text-yellow-400,
+.theme-light .text-yellow-300 {
+  color: #b45309 !important;
+}
+
+.theme-light .text-orange-400,
+.theme-light .text-orange-300,
+.theme-light .text-orange-200 {
+  color: #c2410c !important;
+}
+
+.theme-light .text-brand-400,
+.theme-light .text-brand-300,
+.theme-light .text-brand-200,
+.theme-light .text-brand-100,
+.theme-light .text-indigo-400,
+.theme-light .text-indigo-300,
+.theme-light .text-indigo-200,
+.theme-light .text-indigo-100 {
+  color: #4338ca !important;
+}
+
+.theme-light .text-rose-400,
+.theme-light .text-rose-300,
+.theme-light .text-rose-200,
+.theme-light .text-rose-200\/80,
+.theme-light .text-rose-100,
+.theme-light .text-red-400,
+.theme-light .text-red-300,
+.theme-light .text-pink-400,
+.theme-light .text-pink-300 {
+  color: #be123c !important;
+}
+
+.theme-light .text-sky-400,
+.theme-light .text-sky-300,
+.theme-light .text-sky-200,
+.theme-light .text-cyan-400,
+.theme-light .text-cyan-300,
+.theme-light .text-cyan-200,
+.theme-light .text-blue-400,
+.theme-light .text-blue-300 {
+  color: #0369a1 !important;
+}
+
+/* Preserve crisp white text ONLY on solid/gradient colored buttons & badges (never on translucent /15 or unhovered hover:bg-*) */
+.theme-light .bg-brand-500,
+.theme-light .bg-brand-600,
+.theme-light .bg-brand-700,
+.theme-light .bg-emerald-500,
+.theme-light .bg-emerald-600,
+.theme-light .bg-emerald-700,
+.theme-light .bg-teal-500,
+.theme-light .bg-teal-600,
+.theme-light .bg-indigo-500,
+.theme-light .bg-indigo-600,
+.theme-light .bg-indigo-700,
+.theme-light .bg-violet-500,
+.theme-light .bg-violet-600,
+.theme-light .bg-violet-700,
+.theme-light .bg-purple-500,
+.theme-light .bg-purple-600,
+.theme-light .bg-rose-500,
+.theme-light .bg-rose-600,
+.theme-light .bg-rose-700,
+.theme-light .bg-red-500,
+.theme-light .bg-red-600,
+.theme-light .bg-pink-500,
+.theme-light .bg-pink-600,
+.theme-light .bg-orange-500,
+.theme-light .bg-orange-600,
+.theme-light .bg-amber-600,
+.theme-light .bg-sky-500,
+.theme-light .bg-sky-600,
+.theme-light .bg-cyan-500,
+.theme-light .bg-cyan-600,
+.theme-light .bg-blue-500,
+.theme-light .bg-blue-600,
+.theme-light .bg-amber-500.text-white,
+.theme-light .from-brand-500,
+.theme-light .from-brand-600,
+.theme-light .from-emerald-500,
+.theme-light .from-emerald-600,
+.theme-light .from-teal-500,
+.theme-light .from-teal-600,
+.theme-light .from-orange-500,
+.theme-light .from-orange-600,
+.theme-light .from-rose-500,
+.theme-light .from-rose-600,
+.theme-light .from-indigo-500,
+.theme-light .from-indigo-600,
+.theme-light .from-violet-500,
+.theme-light .from-violet-600,
+.theme-light .from-sky-500,
+.theme-light .from-cyan-500,
+.theme-light .from-amber-500.text-white {
+  color: #ffffff !important;
+}
+
+.theme-light .bg-brand-500 *,
+.theme-light .bg-brand-600 *,
+.theme-light .bg-brand-700 *,
+.theme-light .bg-emerald-500 *,
+.theme-light .bg-emerald-600 *,
+.theme-light .bg-emerald-700 *,
+.theme-light .bg-teal-500 *,
+.theme-light .bg-teal-600 *,
+.theme-light .bg-indigo-500 *,
+.theme-light .bg-indigo-600 *,
+.theme-light .bg-indigo-700 *,
+.theme-light .bg-violet-500 *,
+.theme-light .bg-violet-600 *,
+.theme-light .bg-violet-700 *,
+.theme-light .bg-purple-500 *,
+.theme-light .bg-purple-600 *,
+.theme-light .bg-rose-500 *,
+.theme-light .bg-rose-600 *,
+.theme-light .bg-rose-700 *,
+.theme-light .bg-red-500 *,
+.theme-light .bg-red-600 *,
+.theme-light .bg-pink-500 *,
+.theme-light .bg-pink-600 *,
+.theme-light .bg-orange-500 *,
+.theme-light .bg-orange-600 *,
+.theme-light .bg-amber-600 *,
+.theme-light .bg-sky-500 *,
+.theme-light .bg-sky-600 *,
+.theme-light .bg-cyan-500 *,
+.theme-light .bg-cyan-600 *,
+.theme-light .bg-blue-500 *,
+.theme-light .bg-blue-600 *,
+.theme-light .bg-amber-500.text-white *,
+.theme-light .from-brand-500 *,
+.theme-light .from-brand-600 *,
+.theme-light .from-emerald-500 *,
+.theme-light .from-emerald-600 *,
+.theme-light .from-teal-500 *,
+.theme-light .from-teal-600 *,
+.theme-light .from-orange-500 *,
+.theme-light .from-orange-600 *,
+.theme-light .from-rose-500 *,
+.theme-light .from-rose-600 *,
+.theme-light .from-indigo-500 *,
+.theme-light .from-indigo-600 *,
+.theme-light .from-violet-500 *,
+.theme-light .from-violet-600 *,
+.theme-light .from-sky-500 *,
+.theme-light .from-cyan-500 *,
+.theme-light .from-amber-500.text-white * {
+  color: #ffffff !important;
+}
+
+/* Ensure bright yellow/amber buttons with dark text stay dark & crisp in Light Mode */
+.theme-light .bg-amber-400,
+.theme-light .bg-amber-500.text-slate-950,
+.theme-light .from-amber-500.text-slate-950,
+.theme-light .bg-amber-400 *,
+.theme-light .bg-amber-500.text-slate-950 *,
+.theme-light .from-amber-500.text-slate-950 * {
+  color: #0f172a !important;
+}
+
+/* Preserve white text when hovering buttons that turn into solid colored backgrounds */
+.theme-light .hover\:bg-brand-600:hover,
+.theme-light .hover\:bg-brand-500:hover,
+.theme-light .hover\:bg-rose-600:hover,
+.theme-light .hover\:bg-rose-500:hover,
+.theme-light .hover\:bg-indigo-600:hover,
+.theme-light .hover\:bg-indigo-500:hover,
+.theme-light .hover\:bg-emerald-600:hover,
+.theme-light .hover\:bg-emerald-500:hover,
+.theme-light .hover\:bg-violet-600:hover,
+.theme-light .hover\:bg-violet-500:hover,
+.theme-light .hover\:bg-brand-600:hover *,
+.theme-light .hover\:bg-brand-500:hover *,
+.theme-light .hover\:bg-rose-600:hover *,
+.theme-light .hover\:bg-rose-500:hover *,
+.theme-light .hover\:bg-indigo-600:hover *,
+.theme-light .hover\:bg-indigo-500:hover *,
+.theme-light .hover\:bg-emerald-600:hover *,
+.theme-light .hover\:bg-emerald-500:hover *,
+.theme-light .hover\:bg-violet-600:hover *,
+.theme-light .hover\:bg-violet-500:hover * {
+  color: #ffffff !important;
+}
+
+/* Standout POS Bottom Caja Card & Dynamic Fluorescent Client Name (Dark & Light Mode) */
+.theme-light .pos-caja-bar,
+.pos-caja-bar {
+  background: var(
+    --caja-card-bg,
+    linear-gradient(135deg, #2e1065 0%, #1e1b4b 55%, #3b0764 100%)
+  ) !important;
+  border: 2px solid var(--caja-card-border, #a855f7) !important;
+  box-shadow: var(
+    --caja-card-shadow,
+    0 12px 28px -4px rgba(147, 51, 234, 0.5),
+    0 0 0 1px rgba(168, 85, 247, 0.35)
+  ) !important;
+}
+
+.theme-light .pos-caja-bar:hover,
+.pos-caja-bar:hover {
+  background: var(
+    --caja-card-bg-hover,
+    linear-gradient(135deg, #3b0764 0%, #312e81 55%, #4c1d95 100%)
+  ) !important;
+  border-color: var(--caja-card-border, #c084fc) !important;
+}
+
+.theme-light .pos-caja-client-pill,
+.pos-caja-client-pill,
+.theme-light .pos-caja-bar .pos-caja-client-pill,
+.pos-caja-bar .pos-caja-client-pill {
+  background: var(--client-neon-bg, rgba(57, 255, 20, 0.14)) !important;
+  color: var(--client-neon-color, #39ff14) !important;
+  border: 1.5px solid var(--client-neon-border, rgba(57, 255, 20, 0.6)) !important;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25) !important;
+  text-shadow: 0 0 10px var(--client-neon-glow, rgba(57, 255, 20, 0.45));
+}
+
+.theme-light .pos-caja-client-pill *,
+.pos-caja-client-pill *,
+.theme-light .pos-caja-bar .pos-caja-client-pill *,
+.pos-caja-bar .pos-caja-client-pill * {
+  color: var(--client-neon-color, #39ff14) !important;
+}
+
+.theme-light input.pos-caja-client-input,
+input.pos-caja-client-input {
+  background: #111522 !important;
+  color: var(--client-neon-color, #39ff14) !important;
+  border: 1.5px solid var(--client-neon-border, rgba(57, 255, 20, 0.6)) !important;
+  text-shadow: 0 0 10px var(--client-neon-glow, rgba(57, 255, 20, 0.45));
+  caret-color: var(--client-neon-color, #39ff14) !important;
+}
+
+.theme-light input.pos-caja-client-input:focus,
+input.pos-caja-client-input:focus {
+  border-color: var(--client-neon-color, #39ff14) !important;
+  box-shadow: 0 0 0 2px var(--client-neon-bg, rgba(57, 255, 20, 0.22)) !important;
+}
+
+.theme-light input.pos-caja-client-input::placeholder,
+input.pos-caja-client-input::placeholder {
+  color: var(--client-neon-border, rgba(57, 255, 20, 0.45)) !important;
+}
+
+.theme-light .pos-caja-bar .pos-caja-total-main,
+.pos-caja-bar .pos-caja-total-main {
+  color: var(--app-text-main, #ffffff) !important;
+}
+
+.theme-light .pos-caja-bar .pos-caja-total-curr,
+.pos-caja-bar .pos-caja-total-curr {
+  color: inherit !important;
+}
+
+.theme-light .pos-caja-bar .pos-caja-sub,
+.pos-caja-bar .pos-caja-sub {
+  color: var(--caja-card-sub, #e9d5ff) !important;
+}
+
+.theme-light .pos-caja-bar .pos-caja-ref,
+.pos-caja-bar .pos-caja-ref {
+  color: var(--caja-card-sub, #e9d5ff) !important;
+}
+
+/* Global Typography & Text Color Tone Customization */
+html.app-custom-text-tone body:not(.theme-light) .text-white,
+html.app-custom-text-tone body:not(.theme-light) .text-zinc-100 {
+  color: var(--app-text-main, #ffffff) !important;
+}
+
+html.app-custom-text-tone body:not(.theme-light) .text-slate-200,
+html.app-custom-text-tone body:not(.theme-light) .text-slate-300,
+html.app-custom-text-tone body:not(.theme-light) .text-zinc-200,
+html.app-custom-text-tone body:not(.theme-light) .text-zinc-300 {
+  color: var(--app-text-sub, #cbd5e1) !important;
+}
+
+html.app-bold-boost body,
+html.app-bold-boost button,
+html.app-bold-boost input,
+html.app-bold-boost select,
+html.app-bold-boost span,
+html.app-bold-boost p,
+html.app-bold-boost h1,
+html.app-bold-boost h2,
+html.app-bold-boost h3,
+html.app-bold-boost h4 {
+  font-weight: 800 !important;
+  letter-spacing: 0.01em;
+}
+
+html.app-reduced-motion *,
+html.app-reduced-motion *::before,
+html.app-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Dynamic Store / Branch Themed Product Cards & General App Cards */
+.store-themed-card {
+  background-color: var(--store-card-bg, rgba(30, 27, 75, 0.82)) !important;
+  border-color: var(--store-card-border, rgba(99, 102, 241, 0.55)) !important;
+  border-radius: var(--app-card-radius, 16px) !important;
+  box-shadow: 0 8px 24px -6px var(--store-card-glow, rgba(99, 102, 241, 0.22));
+}
+
+.store-themed-card:hover {
+  border-color: var(--pos-card-border-hover, rgba(129, 140, 248, 0.75)) !important;
+  box-shadow: 0 12px 28px -4px var(--store-card-glow, rgba(99, 102, 241, 0.34));
+}
+
+.theme-light .store-themed-card {
+  background-color: var(--store-card-light-bg, rgba(238, 242, 255, 0.92)) !important;
+  border-color: var(--store-card-border, rgba(99, 102, 241, 0.45)) !important;
+  box-shadow: 0 8px 20px -6px var(--store-card-glow, rgba(99, 102, 241, 0.16));
+}
+
+/* Dynamic Card Radius & Visual Theme Surface on Cards Across the App */
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app .bg-slate-800.border,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app .bg-slate-800.border-2,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app .bg-slate-800\/90.border,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app .bg-slate-800\/85.border {
+  background: var(--pos-card-bg) !important;
+  border-color: var(--pos-card-border) !important;
+  border-radius: var(--app-card-radius, 16px) !important;
+}
+
+html:not([data-card-shape="rounded"]) #app .rounded-2xl {
+  border-radius: var(--app-card-radius, 16px) !important;
+}
+
+html:not([data-card-shape="rounded"]) #app button:not(.rounded-full):not(.pos-caja-bar),
+html:not([data-card-shape="rounded"]) .pos-products-grid .pos-product-card .pos-card-footer span,
+html:not([data-card-shape="rounded"]) .pos-products-grid .pos-product-card .pos-card-badges span {
+  border-radius: var(--app-btn-radius, 12px) !important;
+}
+
+/* Dynamic Theme Styling for Primary / Brand Buttons Across the App */
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.bg-brand-600,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.bg-brand-500,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.from-brand-600,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.from-brand-500 {
+  background: var(--pos-btn-bg, linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)) !important;
+  color: var(--pos-btn-text, #ffffff) !important;
+  border-color: var(--pos-btn-border, rgba(129, 140, 248, 0.45)) !important;
+  box-shadow: 0 6px 16px -3px var(--pos-btn-shadow, rgba(79, 70, 229, 0.32)) !important;
+}
+
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.bg-brand-600:hover,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.bg-brand-500:hover,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.from-brand-600:hover,
+html:not([data-card-style="matte_titanium"]) body:not(.theme-light) #app button.from-brand-500:hover {
+  background: var(--pos-btn-bg-hover, linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)) !important;
+}
+
+/* High-Contrast Mode Enhancements for Cards & Buttons */
+html[data-high-contrast="true"] body:not(.theme-light) .pos-products-grid .pos-product-card,
+html[data-high-contrast="true"] body:not(.theme-light) .store-themed-card {
+  border-width: 2px !important;
+  box-shadow:
+    0 6px 18px -2px rgba(0, 0, 0, 0.75),
+    0 0 0 1px var(--pos-card-border, #facc15) !important;
+}
+
+html[data-high-contrast="true"] body:not(.theme-light) #app button.bg-brand-600,
+html[data-high-contrast="true"] body:not(.theme-light) #app button.from-brand-600 {
+  border: 1.5px solid var(--pos-btn-border, #fef08a) !important;
+  font-weight: 900 !important;
+}
+
+/* POS ("Vender") Product Cards: Customizable Matte Surface, Color Tone & Shape */
+.pos-products-grid .pos-product-card {
+  background: var(
+    --pos-card-bg,
+    linear-gradient(180deg, #2b2e37 0%, #23262e 100%)
+  ) !important;
+  border: 1.5px solid var(--pos-card-border, rgba(255, 255, 255, 0.15)) !important;
+  border-radius: var(--app-card-radius, 16px) !important;
+  box-shadow:
+    0 4px 12px -2px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-card-shape="double_frame"] .pos-products-grid .pos-product-card,
+html[data-card-shape="double_frame"] .store-themed-card {
+  box-shadow:
+    0 6px 16px -2px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 2px rgba(255, 255, 255, 0.08) !important;
+}
+
+.pos-products-grid .pos-product-card:hover {
+  background: var(
+    --pos-card-bg-hover,
+    linear-gradient(180deg, #323640 0%, #292c35 100%)
+  ) !important;
+  border-color: var(--pos-card-border-hover, rgba(255, 255, 255, 0.28)) !important;
+  box-shadow:
+    0 6px 16px -3px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.pos-products-grid .pos-product-card.pos-product-card-active {
+  background: var(
+    --pos-card-bg-hover,
+    linear-gradient(180deg, #312f2c 0%, #272624 100%)
+  ) !important;
+  border: 2px solid var(--color-brand-400, rgba(251, 191, 36, 0.85)) !important;
+  box-shadow:
+    0 4px 14px -2px rgba(0, 0, 0, 0.45),
+    0 0 0 1px var(--color-brand-400, rgba(251, 191, 36, 0.3));
+}
+
+.theme-light .pos-products-grid .pos-product-card {
+  background: var(--store-card-light-bg, linear-gradient(180deg, #ffffff 0%, #f4f4f1 100%)) !important;
+  border: 1.5px solid var(--store-card-border, #cbd5e1) !important;
+  border-radius: var(--app-card-radius, 16px) !important;
+  box-shadow:
+    0 3px 10px -2px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 #ffffff !important;
+}
+
+.theme-light .pos-products-grid .pos-product-card:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #eaeae5 100%) !important;
+  border-color: var(--color-brand-500, #94a3b8) !important;
+}
+
+.theme-light .pos-products-grid .pos-product-card.pos-product-card-active {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border: 2px solid var(--color-brand-600, #d97706) !important;
+}
+
+/* ========================================================================== */
+/* INDEPENDENT PRODUCT CARD ELEMENT CUSTOMIZATION (Image, Title, Rates, Info) */
+/* ========================================================================== */
+.pos-products-grid .pos-product-card .pos-card-img {
+  width: var(--pos-img-size, 44px) !important;
+  height: var(--pos-img-size, 44px) !important;
+  border-radius: var(--pos-img-radius, 10px) !important;
+  border: var(--pos-img-border, 1.5px solid rgba(255, 255, 255, 0.14)) !important;
+  box-shadow: var(--pos-img-shadow, 0 2px 6px rgba(0, 0, 0, 0.35)) !important;
+}
+
+html[data-pos-img-mode="banner"] .pos-products-grid .pos-product-card .pos-card-title-row {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0.45rem !important;
+}
+
+html[data-pos-img-mode="banner"] .pos-products-grid .pos-product-card .pos-card-img {
+  width: 100% !important;
+  height: var(--pos-img-size, 112px) !important;
+  object-fit: cover !important;
+  margin-top: 0 !important;
+}
+
+/* 1. Product Name (.pos-card-title) - Never truncated or hidden */
+.pos-products-grid .pos-product-card .pos-card-title {
+  font-size: calc(0.8125rem * var(--pos-el-title-size, 1)) !important;
+  color: var(--pos-el-title-color, var(--app-text-main, #ffffff)) !important;
+  font-family: var(--pos-el-title-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-title-weight, 800) !important;
+  text-transform: var(--pos-el-title-transform, none) !important;
+  line-height: 1.24 !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* 2. Subtitle / Brand & Weight (.pos-card-subtitle) - Never truncated or hidden */
+.pos-products-grid .pos-product-card .pos-card-subtitle {
+  font-size: calc(0.66rem * var(--pos-el-subtitle-size, 1)) !important;
+  color: var(--pos-el-subtitle-color, #cbd5e1) !important;
+  font-family: var(--pos-el-subtitle-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-subtitle-weight, 700) !important;
+  text-transform: var(--pos-el-subtitle-transform, none) !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* 3. Primary Price + ISO Uniform Color (.pos-card-primary-price) */
+.pos-products-grid .pos-product-card .pos-card-primary-price {
+  font-size: calc(1.06rem * var(--pos-el-price-size, 1)) !important;
+  color: var(--pos-el-price-color, var(--app-text-main, #ffffff)) !important;
+  font-family: var(--pos-el-price-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-price-weight, 900) !important;
+  text-transform: var(--pos-el-price-transform, none) !important;
+}
+
+.pos-products-grid .pos-product-card .pos-card-primary-price .pos-card-primary-iso {
+  color: inherit !important;
+  font-size: 0.68em !important;
+  font-weight: inherit !important;
+}
+
+/* 4. USD Reference Rate Uniform Color (.pos-card-usd-rate) */
+.pos-products-grid .pos-product-card .pos-card-usd-rate {
+  font-size: calc(0.685rem * var(--pos-el-usd-size, 1)) !important;
+  color: var(--pos-el-usd-color, #e2e8f0) !important;
+  font-family: var(--pos-el-usd-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-usd-weight, 700) !important;
+  text-transform: var(--pos-el-usd-transform, none) !important;
+}
+
+/* 5. Secondary Currency Rate Uniform Color (.pos-card-secondary-rate) */
+.pos-products-grid .pos-product-card .pos-card-secondary-rate {
+  font-size: calc(0.685rem * var(--pos-el-sec-size, 1)) !important;
+  color: var(--pos-el-sec-color, #94a3b8) !important;
+  font-family: var(--pos-el-sec-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-sec-weight, 700) !important;
+  text-transform: var(--pos-el-sec-transform, none) !important;
+}
+
+/* 6. Crypto Rate Uniform Color (.pos-card-crypto-rate) */
+.pos-products-grid .pos-product-card .pos-card-crypto-rate {
+  font-size: calc(0.64rem * var(--pos-el-crypto-size, 1)) !important;
+  color: var(--pos-el-crypto-color, #fbbf24) !important;
+  font-family: var(--pos-el-crypto-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-crypto-weight, 800) !important;
+  text-transform: var(--pos-el-crypto-transform, none) !important;
+}
+
+/* 7. Category Label (.pos-card-category) */
+.pos-products-grid .pos-product-card .pos-card-category {
+  font-size: calc(0.64rem * var(--pos-el-cat-size, 1)) !important;
+  color: var(--pos-el-cat-color, #94a3b8) !important;
+  font-family: var(--pos-el-cat-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-cat-weight, 700) !important;
+  text-transform: var(--pos-el-cat-transform, none) !important;
+}
+
+/* 8. Stock Badge (.pos-card-stock) */
+.pos-products-grid .pos-product-card .pos-card-stock {
+  font-size: calc(0.61rem * var(--pos-el-stock-size, 1)) !important;
+  color: var(--pos-el-stock-color, #cbd5e1) !important;
+  font-family: var(--pos-el-stock-font, var(--app-font-family)) !important;
+  font-weight: var(--pos-el-stock-weight, 800) !important;
+  text-transform: var(--pos-el-stock-transform, none) !important;
+}
+
+/* Light Theme Adjustments for Per-Element Colors */
+.theme-light .pos-products-grid .pos-product-card .pos-card-title {
+  color: var(--pos-el-title-color-light, #0f172a) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-subtitle {
+  color: var(--pos-el-subtitle-color-light, #475569) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-primary-price {
+  color: var(--pos-el-price-color-light, #0f172a) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-usd-rate {
+  color: var(--pos-el-usd-color-light, #1e293b) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-secondary-rate {
+  color: var(--pos-el-sec-color-light, #475569) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-crypto-rate {
+  color: var(--pos-el-crypto-color-light, #b45309) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-category {
+  color: var(--pos-el-cat-color-light, #475569) !important;
+}
+.theme-light .pos-products-grid .pos-product-card .pos-card-stock {
+  color: var(--pos-el-stock-color-light, #334155) !important;
+}
+
+/* Fly-to-Cart Animation from Product Card Icon to Bottom-Right Floating Cart */
+@keyframes posFlyToCartArc {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1.04);
+  }
+  38% {
+    opacity: 0.96;
+    transform: translate3d(
+        calc(var(--fly-dx, 0px) * 0.54),
+        calc(var(--fly-dy, 0px) * 0.42 - 16px),
+        0
+      )
+      scale(0.76);
+  }
+  78% {
+    opacity: 0.84;
+    transform: translate3d(
+        calc(var(--fly-dx, 0px) * 0.88),
+        calc(var(--fly-dy, 0px) * 0.86),
+        0
+      )
+      scale(0.42);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--fly-dx, 0px), var(--fly-dy, 0px), 0)
+      scale(0.18);
+  }
+}
+
+.pos-fly-to-cart-token {
+  will-change: transform, opacity;
+  pointer-events: none;
+  animation: posFlyToCartArc 360ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes posCartReceivePop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pos-cart-receive-pop {
+  animation: posCartReceivePop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#app .grid-cols-2 .pos-card-primary-price {
+  text-shadow:
+    0 0 10px rgba(16, 185, 129, 0.28),
+    0 0 4px rgba(255, 255, 255, 0.16);
+}
+
+#app .grid-cols-2 .pos-card-primary-price[data-long-price="true"],
+#app .grid-cols-2 .pos-card-primary-price.pos-card-primary-price-long {
+  letter-spacing: -0.02em !important;
+}
+
+.theme-light #app .grid-cols-2 .pos-card-primary-price {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+}
+
+.theme-light .pos-products-grid .pos-product-card .pos-card-price-block {
+  border-top-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+/* POS Product Grid: Responsive Reordering & Price Legibility on Small Screens */
+@media (max-width: 639px) {
+  .pos-products-grid .pos-product-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pos-products-grid .pos-card-title-row {
+    order: 1;
+    width: 100%;
+  }
+
+  .pos-products-grid .pos-card-title {
+    display: block !important;
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+
+  .pos-products-grid .pos-card-price-block {
+    order: 2;
+    width: 100%;
+  }
+
+  .pos-products-grid .pos-card-badges {
+    order: 3;
+  }
+
+  .pos-products-grid .pos-card-footer {
+    order: 4;
+  }
+}
+
+@media (max-width: 380px) {
+  .pos-products-grid {
+    gap: 0.45rem;
+  }
+
+  .pos-products-grid .pos-product-card {
+    padding: 0.55rem;
+  }
+
+  .pos-products-grid .pos-card-primary-price {
+    font-size: calc(0.98rem * var(--pos-el-price-size, 1)) !important;
+    line-height: 1.15;
+  }
+}
+
+/* Fixed-Size Full-Visibility Store Title (Only Color Changes) */
+.store-main-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: clamp(16px, 4.4vw, 19px) !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--store-title-color, #ffffff) !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+.theme-light .store-main-title {
+  color: var(--store-title-color-light, #0f172a) !important;
+}
+
+@media (min-width: 640px) {
+  .store-main-title {
+    font-size: 21px !important;
+  }
+}
+
+/* Ultra-Small Viewports (< 360px): Prevent Any Overflow in Cart & Change Calculator */
+@media (max-width: 360px) {
+  #modal-container {
+    padding: 0.375rem !important;
+  }
+
+  .pos-checkout-modal {
+    padding: 0.625rem !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .pos-cart-items-section,
+  .pos-payment-box {
+    padding: 0.5rem !important;
+  }
+
+  .pos-cart-item-row {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.375rem !important;
+    padding: 0.5rem !important;
+  }
+
+  .pos-cart-item-controls {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(51, 65, 85, 0.45);
+  }
+
+  .pos-qty-btn {
+    width: 1.65rem !important;
+    height: 1.65rem !important;
+  }
+
+  .pos-cart-total-box {
+    padding: 0.55rem 0.65rem !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+  }
+
+  .pos-cart-total-box > div:last-child {
+    text-align: left !important;
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  .pos-cart-total-primary {
+    font-size: 1.05rem !important;
+  }
+
+  .pos-payment-mode-switch {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pos-change-calc-row {
+    gap: 0.35rem !important;
+  }
+
+  .pos-currency-select {
+    width: 82px !important;
+    min-width: 76px !important;
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+    font-size: 10px !important;
+  }
+
+  .pos-change-result-box {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 0.5rem !important;
+  }
+
+  .pos-split-payment-row {
+    display: grid !important;
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    gap: 0.35rem !important;
+    padding: 0.45rem !important;
+  }
+
+  .pos-split-payment-row .pos-split-method {
+    grid-column: span 11 / span 11 !important;
+  }
+
+  .pos-split-payment-row .pos-split-delete {
+    grid-column: span 1 / span 1 !important;
+  }
+
+  .pos-split-payment-row .pos-split-amount {
+    grid-column: span 7 / span 7 !important;
+  }
+
+  .pos-split-payment-row .pos-split-currency {
+    grid-column: span 5 / span 5 !important;
+  }
+
+  .pos-caja-bar-wrapper {
+    left: 0.375rem !important;
+    right: 0.375rem !important;
+    bottom: 0.375rem !important;
+  }
+
+  .pos-caja-bar {
+    padding: 0.5rem 0.65rem !important;
+    border-radius: 1.15rem !important;
+  }
+}
+
+/* Subtle 'Pop' & Confetti Animation for 'Guardar Producto' Validation Success */
+@keyframes posSaveBtnPop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.045) translateY(-2px);
+    box-shadow:
+      0 0 0 4px rgba(16, 185, 129, 0.35),
+      0 12px 24px -4px rgba(16, 185, 129, 0.45);
+  }
+  70% {
+    transform: scale(0.985) translateY(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.pos-save-btn-pop {
+  animation: posSaveBtnPop 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes posConfettiParticle {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(0.4) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(
+        calc(var(--confetti-dx, 0px) * 0.55),
+        calc(var(--confetti-dy, -28px) * 0.65),
+        0
+      )
+      scale(1.1) rotate(calc(var(--confetti-rot, 120deg) * 0.5));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(
+        var(--confetti-dx, 0px),
+        var(--confetti-dy, -42px),
+        0
+      )
+      scale(0.55) rotate(var(--confetti-rot, 240deg));
+  }
+}
+
+.pos-confetti-particle {
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: posConfettiParticle 680ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
